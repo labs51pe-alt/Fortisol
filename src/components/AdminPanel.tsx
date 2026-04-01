@@ -30,6 +30,22 @@ import {
 
 import { Product, Slide, CompanySettings, Offer } from '../types';
 
+const DEFAULT_SETTINGS: CompanySettings = {
+  phone: '',
+  whatsapp: '',
+  email: '',
+  address: '',
+  facebook: '',
+  instagram: '',
+  tiktok: '',
+  show_facebook: false,
+  show_instagram: false,
+  show_tiktok: false,
+  show_whatsapp: false,
+  promo_title: '',
+  promo_enabled: false
+};
+
 export default function AdminPanel() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [password, setPassword] = useState('');
@@ -37,7 +53,7 @@ export default function AdminPanel() {
   const [products, setProducts] = useState<Product[]>([]);
   const [slides, setSlides] = useState<Slide[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
-  const [settings, setSettings] = useState<CompanySettings | null>(null);
+  const [settings, setSettings] = useState<CompanySettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<any>(null);
@@ -59,7 +75,11 @@ export default function AdminPanel() {
       if (productsData) setProducts(productsData);
       if (slidesData) setSlides(slidesData);
       if (offersData) setOffers(offersData);
-      if (settingsData) setSettings(settingsData.value);
+      if (settingsData) {
+        setSettings(settingsData.value);
+      } else {
+        setSettings(DEFAULT_SETTINGS);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
       setStatus({ type: 'error', message: 'Error al cargar datos' });
@@ -577,8 +597,8 @@ export default function AdminPanel() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Teléfono</label>
                       <input 
                         type="text" 
-                        value={settings?.phone || ''} 
-                        onChange={e => setSettings(s => s ? {...s, phone: e.target.value} : null)}
+                        value={settings.phone} 
+                        onChange={e => setSettings({...settings, phone: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
@@ -586,8 +606,8 @@ export default function AdminPanel() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">WhatsApp (Número sin espacios)</label>
                       <input 
                         type="text" 
-                        value={settings?.whatsapp || ''} 
-                        onChange={e => setSettings(s => s ? {...s, whatsapp: e.target.value} : null)}
+                        value={settings.whatsapp} 
+                        onChange={e => setSettings({...settings, whatsapp: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
@@ -595,8 +615,8 @@ export default function AdminPanel() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email</label>
                       <input 
                         type="email" 
-                        value={settings?.email || ''} 
-                        onChange={e => setSettings(s => s ? {...s, email: e.target.value} : null)}
+                        value={settings.email} 
+                        onChange={e => setSettings({...settings, email: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
@@ -604,8 +624,8 @@ export default function AdminPanel() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Dirección</label>
                       <input 
                         type="text" 
-                        value={settings?.address || ''} 
-                        onChange={e => setSettings(s => s ? {...s, address: e.target.value} : null)}
+                        value={settings.address} 
+                        onChange={e => setSettings({...settings, address: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
@@ -622,16 +642,16 @@ export default function AdminPanel() {
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Facebook</label>
                         <button 
-                          onClick={() => setSettings(s => s ? {...s, show_facebook: !s.show_facebook} : null)}
-                          className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings?.show_facebook ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
+                          onClick={() => setSettings({...settings, show_facebook: !settings.show_facebook})}
+                          className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings.show_facebook ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
                         >
-                          {settings?.show_facebook ? 'VISIBLE' : 'OCULTO'}
+                          {settings.show_facebook ? 'VISIBLE' : 'OCULTO'}
                         </button>
                       </div>
                       <input 
                         type="text" 
-                        value={settings?.facebook || ''} 
-                        onChange={e => setSettings(s => s ? {...s, facebook: e.target.value} : null)}
+                        value={settings.facebook} 
+                        onChange={e => setSettings({...settings, facebook: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
@@ -639,16 +659,16 @@ export default function AdminPanel() {
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Instagram</label>
                         <button 
-                          onClick={() => setSettings(s => s ? {...s, show_instagram: !s.show_instagram} : null)}
-                          className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings?.show_instagram ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
+                          onClick={() => setSettings({...settings, show_instagram: !settings.show_instagram})}
+                          className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings.show_instagram ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
                         >
-                          {settings?.show_instagram ? 'VISIBLE' : 'OCULTO'}
+                          {settings.show_instagram ? 'VISIBLE' : 'OCULTO'}
                         </button>
                       </div>
                       <input 
                         type="text" 
-                        value={settings?.instagram || ''} 
-                        onChange={e => setSettings(s => s ? {...s, instagram: e.target.value} : null)}
+                        value={settings.instagram} 
+                        onChange={e => setSettings({...settings, instagram: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
@@ -656,16 +676,16 @@ export default function AdminPanel() {
                       <div className="flex items-center justify-between">
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">TikTok</label>
                         <button 
-                          onClick={() => setSettings(s => s ? {...s, show_tiktok: !s.show_tiktok} : null)}
-                          className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings?.show_tiktok ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
+                          onClick={() => setSettings({...settings, show_tiktok: !settings.show_tiktok})}
+                          className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings.show_tiktok ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
                         >
-                          {settings?.show_tiktok ? 'VISIBLE' : 'OCULTO'}
+                          {settings.show_tiktok ? 'VISIBLE' : 'OCULTO'}
                         </button>
                       </div>
                       <input 
                         type="text" 
-                        value={settings?.tiktok || ''} 
-                        onChange={e => setSettings(s => s ? {...s, tiktok: e.target.value} : null)}
+                        value={settings.tiktok} 
+                        onChange={e => setSettings({...settings, tiktok: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
@@ -675,10 +695,10 @@ export default function AdminPanel() {
                         <span className="text-xs font-black uppercase tracking-widest">Botón WhatsApp</span>
                       </div>
                       <button 
-                        onClick={() => setSettings(s => s ? {...s, show_whatsapp: !s.show_whatsapp} : null)}
-                        className={`text-[9px] font-black px-4 py-2 rounded-full transition-colors ${settings?.show_whatsapp ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
+                        onClick={() => setSettings({...settings, show_whatsapp: !settings.show_whatsapp})}
+                        className={`text-[9px] font-black px-4 py-2 rounded-full transition-colors ${settings.show_whatsapp ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
                       >
-                        {settings?.show_whatsapp ? 'HABILITADO' : 'DESHABILITADO'}
+                        {settings.show_whatsapp ? 'HABILITADO' : 'DESHABILITADO'}
                       </button>
                     </div>
                   </div>
@@ -689,23 +709,23 @@ export default function AdminPanel() {
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Barra de Promociones</label>
                   <button 
-                    onClick={() => setSettings(s => s ? {...s, promo_enabled: !s.promo_enabled} : null)}
-                    className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings?.promo_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
+                    onClick={() => setSettings({...settings, promo_enabled: !settings.promo_enabled})}
+                    className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings.promo_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
                   >
-                    {settings?.promo_enabled ? 'VISIBLE' : 'OCULTO'}
+                    {settings.promo_enabled ? 'VISIBLE' : 'OCULTO'}
                   </button>
                 </div>
                 <input 
                   type="text" 
-                  value={settings?.promo_title || ''} 
-                  onChange={e => setSettings(s => s ? {...s, promo_title: e.target.value} : null)}
+                  value={settings.promo_title} 
+                  onChange={e => setSettings({...settings, promo_title: e.target.value})}
                   placeholder="Título de la promoción"
                   className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                 />
               </div>
               <div className="mt-12 pt-8 border-t border-slate-100">
                 <button 
-                  onClick={() => settings && handleSaveSettings(settings)}
+                  onClick={() => handleSaveSettings(settings || DEFAULT_SETTINGS)}
                   className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-6 text-[11px] font-black text-white transition-all hover:bg-slate-800 shadow-xl shadow-black/10"
                 >
                   <Save size={18} /> GUARDAR CONFIGURACIÓN DE EMPRESA
