@@ -1149,7 +1149,7 @@ function StoreFront() {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="relative w-full max-w-6xl overflow-hidden rounded-[3rem] bg-white shadow-2xl my-8"
+              className="relative w-full max-w-6xl overflow-hidden rounded-2xl md:rounded-[3rem] bg-white shadow-2xl my-4 md:my-8"
             >
               <button 
                 onClick={() => {
@@ -1157,16 +1157,16 @@ function StoreFront() {
                   setModalQuantity(1);
                   setActiveImageIndex(0);
                 }}
-                className="absolute right-8 top-8 z-10 rounded-full bg-slate-50 p-3 text-slate-900 transition-all hover:bg-black hover:text-white"
+                className="absolute right-4 top-4 md:right-8 md:top-8 z-10 rounded-full bg-white/80 md:bg-slate-50 p-2 md:p-3 text-slate-900 transition-all hover:bg-black hover:text-white shadow-lg backdrop-blur-sm"
               >
-                <X size={24} />
+                <X size={20} className="md:w-6 md:h-6" />
               </button>
 
-              <div className="grid md:grid-cols-2 max-h-[90vh] overflow-y-auto no-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-2 max-h-[90vh] overflow-y-auto no-scrollbar">
                 {/* Left Side: Image & Info */}
                 <div className="flex flex-col bg-slate-50">
-                  <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-16">
-                    <div className="aspect-square w-full overflow-hidden mb-8">
+                  <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-16">
+                    <div className="aspect-square w-full max-w-[300px] md:max-w-none overflow-hidden mb-6 md:mb-8">
                       <img 
                         src={(selectedProduct as any).images?.[activeImageIndex] || (selectedProduct as any).image_url || selectedProduct.image} 
                         alt={selectedProduct.name} 
@@ -1177,12 +1177,12 @@ function StoreFront() {
                     
                     {/* Thumbnail Gallery */}
                     {(selectedProduct as any).images && (selectedProduct as any).images.length > 1 && (
-                      <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                      <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 no-scrollbar w-full justify-center">
                         {(selectedProduct as any).images.map((img: string, idx: number) => (
                           <button
                             key={idx}
                             onClick={() => setActiveImageIndex(idx)}
-                            className={`h-20 w-20 shrink-0 rounded-2xl overflow-hidden border-2 transition-all ${activeImageIndex === idx ? 'border-black scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                            className={`h-14 w-14 md:h-20 md:w-20 shrink-0 rounded-xl md:rounded-2xl overflow-hidden border-2 transition-all ${activeImageIndex === idx ? 'border-black scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}
                           >
                             <img src={img} alt={`Thumbnail ${idx}`} className="h-full w-full object-cover" />
                           </button>
@@ -1192,10 +1192,10 @@ function StoreFront() {
                   </div>
                   
                   {/* Nutritional Info / How to Consume Placeholder */}
-                  <div className="p-8 md:p-12 bg-white border-t border-slate-100">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                  <div className="p-6 md:p-12 bg-white border-t border-slate-100">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12">
                       <div>
-                        <h4 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">Información Nutricional</h4>
+                        <h4 className="mb-4 md:mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">Información Nutricional</h4>
                         <div className="space-y-3 text-[11px] text-slate-500">
                           <div className="flex justify-between border-b border-slate-100 pb-2">
                             <span className="font-medium">Tamaño de Porción</span>
@@ -1212,7 +1212,7 @@ function StoreFront() {
                         </div>
                       </div>
                       <div>
-                        <h4 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">¿Cómo consumirlo?</h4>
+                        <h4 className="mb-4 md:mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">¿Cómo consumirlo?</h4>
                         <div className="flex items-start gap-4">
                           <div className="h-8 w-8 shrink-0 flex items-center justify-center rounded-full bg-black text-white text-[11px] font-black shadow-lg shadow-black/20">1</div>
                           <p className="text-[11px] text-slate-500 leading-relaxed font-medium">{selectedProduct.usage || 'Consultar empaque.'}</p>
@@ -1223,46 +1223,46 @@ function StoreFront() {
                 </div>
 
                 {/* Right Side: Details & Actions */}
-                <div className="flex flex-col p-8 md:p-16">
-                  <div className="mb-8">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col p-6 md:p-16">
+                  <div className="mb-6 md:mb-8">
+                    <div className="flex items-center justify-between mb-4 md:mb-6">
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">{selectedProduct.brand || BRAND_NAME}</span>
                         <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">SKU: {selectedProduct.sku || '7759283000221'}</span>
                       </div>
                       {selectedProduct.originalPrice && (
-                        <div className="rounded-full bg-red-500 px-4 py-1.5 text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-red-500/20">
+                        <div className="rounded-full bg-red-500 px-3 py-1 md:px-4 md:py-1.5 text-[9px] md:text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-red-500/20">
                           -{Math.round((1 - selectedProduct.price / selectedProduct.originalPrice) * 100)}%
                         </div>
                       )}
                     </div>
                     
-                    <h2 className="mb-6 text-5xl font-black text-black tracking-tighter leading-[0.9] uppercase">{selectedProduct.name}</h2>
+                    <h2 className="mb-4 md:mb-6 text-3xl md:text-5xl font-black text-black tracking-tighter leading-[0.9] uppercase">{selectedProduct.name}</h2>
                     
-                    <div className="flex items-center gap-4 mb-8">
+                    <div className="flex items-center gap-4 mb-6 md:mb-8">
                       <div className="flex text-black gap-0.5">
                         {[1, 2, 3, 4, 5].map(i => (
-                          <Star key={i} size={14} fill={i <= Math.floor(selectedProduct.rating || 4) ? "currentColor" : "none"} />
+                          <Star key={i} size={12} className="md:w-[14px] md:h-[14px]" fill={i <= Math.floor(selectedProduct.rating || 4) ? "currentColor" : "none"} />
                         ))}
                       </div>
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">({selectedProduct.reviewsCount || 156}) reseñas</span>
                     </div>
 
-                    <div className="flex items-baseline gap-4 mb-10">
-                      <p className="text-5xl font-black text-black tracking-tighter">S/ {selectedProduct.price}</p>
+                    <div className="flex items-baseline gap-4 mb-6 md:mb-10">
+                      <p className="text-3xl md:text-5xl font-black text-black tracking-tighter">S/ {selectedProduct.price}</p>
                       {selectedProduct.originalPrice && (
-                        <p className="text-2xl font-bold text-slate-300 line-through tracking-tighter">S/ {selectedProduct.originalPrice}</p>
+                        <p className="text-xl md:text-2xl font-bold text-slate-300 line-through tracking-tighter">S/ {selectedProduct.originalPrice}</p>
                       )}
                     </div>
                   </div>
                   
-                  <div className="mb-12 space-y-10">
+                  <div className="mb-8 md:mb-12 space-y-8 md:space-y-10">
                     <div>
-                      <h4 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">Beneficios:</h4>
-                      <ul className="space-y-4">
+                      <h4 className="mb-4 md:mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">Beneficios:</h4>
+                      <ul className="space-y-3 md:space-y-4">
                         {selectedProduct.benefits?.map((b, i) => (
-                          <li key={i} className="flex items-center gap-4 text-xs text-slate-600 font-bold">
-                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-[10px] font-black text-black shadow-sm">
+                          <li key={i} className="flex items-center gap-3 md:gap-4 text-xs text-slate-600 font-bold">
+                            <div className="flex h-6 w-6 md:h-7 md:w-7 shrink-0 items-center justify-center rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 text-[9px] md:text-[10px] font-black text-black shadow-sm">
                               {i + 1}
                             </div>
                             {b}
@@ -1272,31 +1272,31 @@ function StoreFront() {
                     </div>
 
                     {/* Trust Badges Grid */}
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-4 text-center border border-slate-100 group hover:border-black transition-colors">
-                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#742284] text-white shadow-lg">
-                          <span className="text-lg font-black tracking-tighter">Y</span>
+                    <div className="grid grid-cols-3 gap-2 md:gap-3">
+                      <div className="flex flex-col items-center justify-center rounded-xl md:rounded-2xl bg-slate-50 p-2 md:p-4 text-center border border-slate-100 group hover:border-black transition-colors">
+                        <div className="mb-1 md:mb-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#742284] text-white shadow-lg">
+                          <span className="text-sm md:text-lg font-black tracking-tighter">Y</span>
                         </div>
-                        <p className="text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pagos seguros con Yape Perú</p>
+                        <p className="text-[6px] md:text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pagos seguros con Yape Perú</p>
                       </div>
-                      <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-4 text-center border border-slate-100 group hover:border-black transition-colors">
-                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1F71] text-white shadow-lg">
-                          <span className="text-[10px] font-black italic tracking-tighter text-[#F7B600]">VISA</span>
+                      <div className="flex flex-col items-center justify-center rounded-xl md:rounded-2xl bg-slate-50 p-2 md:p-4 text-center border border-slate-100 group hover:border-black transition-colors">
+                        <div className="mb-1 md:mb-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#1A1F71] text-white shadow-lg">
+                          <span className="text-[8px] md:text-[10px] font-black italic tracking-tighter text-[#F7B600]">VISA</span>
                         </div>
-                        <p className="text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pago Seguro Múltiples</p>
+                        <p className="text-[6px] md:text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pago Seguro Múltiples</p>
                       </div>
-                      <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-4 text-center border border-slate-100 group hover:border-black transition-colors">
-                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-black text-white shadow-lg">
-                          <ShieldCheck size={20} />
+                      <div className="flex flex-col items-center justify-center rounded-xl md:rounded-2xl bg-slate-50 p-2 md:p-4 text-center border border-slate-100 group hover:border-black transition-colors">
+                        <div className="mb-1 md:mb-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black text-white shadow-lg">
+                          <ShieldCheck size={16} className="md:w-5 md:h-5" />
                         </div>
-                        <p className="text-[7px] font-black uppercase tracking-widest text-black leading-tight">Garantía 30 días</p>
+                        <p className="text-[6px] md:text-[7px] font-black uppercase tracking-widest text-black leading-tight">Garantía 30 días</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-auto flex flex-col gap-8">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-6 rounded-2xl border border-slate-100 px-6 py-4">
+                  <div className="mt-auto flex flex-col gap-6 md:gap-8">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                      <div className="flex items-center justify-between sm:justify-start gap-6 rounded-2xl border border-slate-100 px-6 py-4">
                         <button 
                           onClick={() => setModalQuantity(Math.max(1, modalQuantity - 1))}
                           className="text-slate-400 hover:text-black transition-colors"
@@ -1325,20 +1325,22 @@ function StoreFront() {
                         COMPRAR DIRECTAMENTE
                       </button>
 
-                      <button 
-                        onClick={() => toggleWishlist(selectedProduct.id)}
-                        className={`rounded-2xl border p-5 transition-all ${
-                          wishlist.includes(selectedProduct.id) 
-                            ? 'border-red-100 text-red-500 bg-red-50' 
-                            : 'border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-100'
-                        }`}
-                      >
-                        <Heart size={24} fill={wishlist.includes(selectedProduct.id) ? "currentColor" : "none"} />
-                      </button>
+                      <div className="flex gap-4">
+                        <button 
+                          onClick={() => toggleWishlist(selectedProduct.id)}
+                          className={`flex-1 sm:flex-none rounded-2xl border p-5 transition-all flex items-center justify-center ${
+                            wishlist.includes(selectedProduct.id) 
+                              ? 'border-red-100 text-red-500 bg-red-50' 
+                              : 'border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-100'
+                          }`}
+                        >
+                          <Heart size={24} fill={wishlist.includes(selectedProduct.id) ? "currentColor" : "none"} />
+                        </button>
 
-                      <button className="rounded-2xl border border-slate-100 p-5 text-slate-300 hover:text-black transition-all">
-                        <Share2 size={24} />
-                      </button>
+                        <button className="flex-1 sm:flex-none rounded-2xl border border-slate-100 p-5 text-slate-300 hover:text-black transition-all flex items-center justify-center">
+                          <Share2 size={24} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1621,26 +1623,28 @@ function StoreFront() {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl"
+              className="relative w-full max-w-2xl overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-white p-6 md:p-8 shadow-2xl"
             >
               <button 
                 onClick={() => setIsPopupOpen(false)}
-                className="absolute right-6 top-6 z-10 rounded-full bg-slate-100 p-2 text-slate-500 hover:text-black transition-colors"
+                className="absolute right-4 top-4 md:right-6 md:top-6 z-10 rounded-full bg-slate-100 p-2 text-slate-500 hover:text-black transition-colors"
               >
                 <X size={20} />
               </button>
-              <h2 className="text-2xl font-black uppercase tracking-tighter mb-8 text-center">Ofertas Especiales</h2>
-              <div className="grid md:grid-cols-2 gap-6">
+              <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-6 md:mb-8 text-center">Ofertas Especiales</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-h-[60vh] overflow-y-auto no-scrollbar">
                 {popupOffers.map(offer => (
-                  <div key={offer.id} className="rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 p-4">
-                    <img src={offer.image_url} alt={offer.title} className="w-full h-40 object-cover rounded-xl mb-4" />
-                    <h3 className="text-sm font-black uppercase tracking-tight mb-2">{offer.title}</h3>
+                  <div key={offer.id} className="rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 p-4 flex flex-col">
+                    <div className="aspect-video w-full overflow-hidden rounded-xl mb-4">
+                      <img src={offer.image_url} alt={offer.title} className="w-full h-full object-cover" />
+                    </div>
+                    <h3 className="text-xs md:text-sm font-black uppercase tracking-tight mb-4 flex-1">{offer.title}</h3>
                     <button 
                       onClick={() => {
                         setIsPopupOpen(false);
                         document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="w-full rounded-full bg-black py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all"
+                      className="w-full rounded-full bg-black py-3 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all"
                     >
                       VER PRODUCTO
                     </button>
