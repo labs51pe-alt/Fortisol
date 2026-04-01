@@ -404,7 +404,7 @@ function StoreFront() {
       </AnimatePresence>
 
       {/* Hero Slider (Organa Style) */}
-      <section id="inicio" className="relative h-screen min-h-[700px] w-full overflow-hidden bg-black">
+      <section id="inicio" className="relative h-[80vh] min-h-[600px] w-full overflow-hidden bg-black pt-20">
         {/* Background Slider */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -440,49 +440,49 @@ function StoreFront() {
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="mb-8 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white border border-white/20"
+                  className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white border border-white/20"
                 >
                   <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
                   {activeSlides[currentIntroSlide]?.badge || 'FORTISOL PERÚ'}
                 </motion.div>
 
                 {/* Title & Subtitle */}
-                <div className="mb-6 flex flex-col items-center">
-                  <h2 className="text-sm font-black uppercase tracking-[0.4em] text-white/60 mb-4">
+                <div className="mb-4 flex flex-col items-center">
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-2">
                     {activeSlides[currentIntroSlide]?.subtitle}
                   </h2>
-                  <h1 className="text-5xl font-black tracking-tight text-white md:text-7xl lg:text-9xl drop-shadow-2xl max-w-5xl leading-[0.85] uppercase">
+                  <h1 className="text-4xl font-black tracking-tight text-white md:text-7xl lg:text-9xl drop-shadow-2xl max-w-5xl leading-[0.85] uppercase">
                     {activeSlides[currentIntroSlide]?.title}
                   </h1>
                 </div>
 
                 {/* Description */}
-                <p className="mb-12 max-w-xl text-base font-medium text-white/70 md:text-lg leading-relaxed drop-shadow-md">
+                <p className="mb-8 max-w-xl text-sm font-medium text-white/70 md:text-lg leading-relaxed drop-shadow-md">
                   {activeSlides[currentIntroSlide]?.description}
                 </p>
               </motion.div>
             </AnimatePresence>
 
             {/* Controls & CTAs */}
-            <div className="flex flex-col items-center gap-10 w-full">
+            <div className="flex flex-col items-center gap-6 w-full">
               {/* Buttons */}
               <div className="flex flex-col gap-4 sm:flex-row">
                 <button 
                   onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="flex items-center justify-center gap-3 rounded-full bg-white px-16 py-5 text-sm font-black text-black shadow-2xl transition-all hover:bg-slate-100 hover:scale-105 active:scale-95 uppercase tracking-widest group"
+                  className="flex items-center justify-center gap-3 rounded-full bg-white px-10 py-4 text-xs font-black text-black shadow-2xl transition-all hover:bg-slate-100 hover:scale-105 active:scale-95 uppercase tracking-widest group"
                 >
                   ENTRAR A LA WEB
-                  <ChevronRight size={20} />
+                  <ChevronRight size={16} />
                 </button>
               </div>
 
               {/* Progress Dots */}
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 {activeSlides.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentIntroSlide(i)}
-                    className={`h-1 rounded-full transition-all duration-500 ${currentIntroSlide === i ? 'w-12 bg-white' : 'w-4 bg-white/20'}`}
+                    className={`h-1 rounded-full transition-all duration-500 ${currentIntroSlide === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`}
                   />
                 ))}
               </div>
