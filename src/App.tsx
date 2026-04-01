@@ -1080,28 +1080,28 @@ function StoreFront() {
                 <X size={18} />
               </button>
 
-              <div className="flex flex-col md:flex-row max-h-[90vh] overflow-y-auto no-scrollbar">
+              <div className="flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto no-scrollbar">
                 {/* Content */}
-                <div className="flex flex-1 flex-col justify-center p-8 md:p-14 text-black">
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-black w-fit">
+                <div className="flex flex-1 flex-col justify-center p-6 md:p-14 text-black">
+                  <div className="mb-3 md:mb-4 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-black w-fit">
                     OFERTA EXCLUSIVA
                   </div>
-                  <h2 className="text-3xl md:text-5xl font-black leading-tight tracking-tighter uppercase mb-4 md:mb-6">
+                  <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tighter uppercase mb-3 md:mb-6">
                     SÚPER <br className="hidden md:block" /> PROBIÓTICOS
                   </h2>
                   
-                  <p className="text-xs md:text-sm text-slate-500 font-medium leading-relaxed mb-6 md:mb-8">
+                  <p className="text-[11px] md:text-sm text-slate-500 font-medium leading-relaxed mb-4 md:mb-8">
                     Fórmula avanzada con 50 billones de cultivos vivos para una digestión perfecta y sistema inmune fuerte.
                   </p>
 
-                  <div className="flex flex-col gap-3 md:gap-4">
+                  <div className="flex flex-col gap-2 md:gap-4">
                     <button 
                       onClick={() => {
                         const probioticos = PRODUCTS.find(p => p.name.toLowerCase().includes('probióticos'));
                         if (probioticos) setSelectedProduct(probioticos);
                         setIsPromoOpen(false);
                       }}
-                      className="w-full rounded-full border-2 border-black py-3 md:py-4 text-[10px] md:text-[11px] font-black text-black uppercase tracking-widest hover:bg-black hover:text-white transition-all"
+                      className="w-full rounded-full border-2 border-black py-2.5 md:py-4 text-[9px] md:text-[11px] font-black text-black uppercase tracking-widest hover:bg-black hover:text-white transition-all"
                     >
                       VER MÁS
                     </button>
@@ -1111,7 +1111,7 @@ function StoreFront() {
                         if (probioticos) addToCart(probioticos);
                         setIsPromoOpen(false);
                       }}
-                      className="w-full rounded-full bg-black py-4 md:py-5 text-[10px] md:text-[11px] font-black text-white uppercase tracking-widest shadow-xl shadow-black/20 hover:bg-slate-800 transition-all"
+                      className="w-full rounded-full bg-black py-3.5 md:py-5 text-[9px] md:text-[11px] font-black text-white uppercase tracking-widest shadow-xl shadow-black/20 hover:bg-slate-800 transition-all"
                     >
                       COMPRAR AHORA
                     </button>
@@ -1119,16 +1119,16 @@ function StoreFront() {
                 </div>
 
                 {/* Image & Badge */}
-                <div className="relative flex flex-1 items-center justify-center bg-slate-50 p-8 md:p-10">
+                <div className="relative flex flex-1 items-center justify-center bg-slate-50 p-6 md:p-10 min-h-[200px] md:min-h-0">
                   <img 
                     src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&q=80&w=800" 
                     alt="Promo Product" 
-                    className="relative z-10 w-48 md:w-full drop-shadow-2xl transition-transform duration-700 hover:scale-110"
+                    className="relative z-10 w-32 md:w-full drop-shadow-2xl transition-transform duration-700 hover:scale-110"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute right-6 top-6 md:right-10 md:top-10 z-20 flex h-16 w-16 md:h-24 md:w-24 flex-col items-center justify-center rounded-full bg-red-500 text-white shadow-2xl ring-4 ring-white animate-bounce">
-                    <p className="text-lg md:text-2xl font-black">-25%</p>
-                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest">OFF</p>
+                  <div className="absolute right-4 top-4 md:right-10 md:top-10 z-20 flex h-14 w-14 md:h-24 md:w-24 flex-col items-center justify-center rounded-full bg-red-500 text-white shadow-2xl ring-4 ring-white animate-bounce">
+                    <p className="text-base md:text-2xl font-black">-25%</p>
+                    <p className="text-[7px] md:text-[10px] font-black uppercase tracking-widest">OFF</p>
                   </div>
                 </div>
               </div>
@@ -1637,24 +1637,24 @@ function StoreFront() {
               >
                 <X size={18} />
               </button>
-              <div className="text-center mb-6 md:mb-8">
-                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Exclusivo para ti</span>
-                <h2 className="text-xl md:text-3xl font-black uppercase tracking-tighter mt-2">Ofertas de Hoy</h2>
+              <div className="text-center mb-4 md:mb-8">
+                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Exclusivo para ti</span>
+                <h2 className="text-lg md:text-3xl font-black uppercase tracking-tighter mt-1 md:mt-2">Ofertas de Hoy</h2>
               </div>
-              <div className="space-y-4 max-h-[60vh] md:max-h-[65vh] overflow-y-auto no-scrollbar pr-1">
+              <div className="space-y-3 md:space-y-4 max-h-[55vh] md:max-h-[65vh] overflow-y-auto no-scrollbar pr-1">
                 {popupOffers.map(offer => (
-                  <div key={offer.id} className="group relative rounded-2xl md:rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 p-3 md:p-4 transition-all hover:border-black">
-                    <div className="aspect-[16/9] w-full overflow-hidden rounded-xl md:rounded-2xl mb-3 md:mb-4">
+                  <div key={offer.id} className="group relative rounded-xl md:rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 p-2.5 md:p-4 transition-all hover:border-black">
+                    <div className="aspect-[16/9] w-full overflow-hidden rounded-lg md:rounded-2xl mb-2 md:mb-4">
                       <img src={offer.image_url} alt={offer.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    <div className="flex flex-col gap-3 md:gap-4">
-                      <h3 className="text-xs md:text-sm font-black uppercase tracking-tight leading-tight">{offer.title}</h3>
+                    <div className="flex flex-col gap-2 md:gap-4">
+                      <h3 className="text-[10px] md:text-sm font-black uppercase tracking-tight leading-tight">{offer.title}</h3>
                       <button 
                         onClick={() => {
                           setIsPopupOpen(false);
                           document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="w-full rounded-full bg-black py-3 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all shadow-lg shadow-black/10"
+                        className="w-full rounded-full bg-black py-2.5 md:py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all shadow-lg shadow-black/10"
                       >
                         Aprovechar Oferta
                       </button>
