@@ -6,7 +6,7 @@ export const SOCIAL_INSTAGRAM = "https://www.instagram.com/fortisolperu";
 export const SOCIAL_FACEBOOK = "https://www.facebook.com/fortisolperu";
 export const SOCIAL_TIKTOK = "https://www.tiktok.com/@fortisolperu";
 export const COMPANY_EMAIL = "contacto@fortisolperu.com";
-export const COMPANY_ADDRESS = "Av. Las Palmeras 123, Los Olivos, Lima";
+export const COMPANY_ADDRESS = "";
 
 export const PRODUCTS: Product[] = [
   {

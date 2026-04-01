@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { GoogleGenAI } from "@google/genai";
 import { supabase } from './lib/supabase';
 import AdminPanel from './components/AdminPanel';
 import CRM from './components/CRM';
@@ -28,6 +29,7 @@ import {
   RotateCcw,
   Heart,
   Share2,
+  Copy,
   X,
   Phone,
   Instagram,
@@ -43,7 +45,9 @@ import {
   Check,
   Bot,
   Send,
-  Loader2
+  Loader2,
+  Sun,
+  Sparkles
 } from 'lucide-react';
 import { 
   PRODUCTS, 
@@ -90,10 +94,30 @@ function StoreFront() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [currentIntroSlide, setCurrentIntroSlide] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [shareProduct, setShareProduct] = useState<Product | null>(null);
+  const [copied, setCopied] = useState(false);
   const [modalQuantity, setModalQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [checkoutStep, setCheckoutStep] = useState(1); // 1: Cart, 2: Shipping Form
+
+  const handleCopyLink = (product: Product) => {
+    const url = `${window.location.origin}/#productos`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareOnWhatsApp = (product: Product) => {
+    const url = `${window.location.origin}/#productos`;
+    const text = `¡Mira este producto en Fortisol Perú! ${product.name}: ${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const shareOnFacebook = (product: Product) => {
+    const url = `${window.location.origin}/#productos`;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+  };
   const [isPromoOpen, setIsPromoOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 12, minutes: 45, seconds: 30 });
   
@@ -115,8 +139,8 @@ function StoreFront() {
 
   const predefinedQuestions = [
     "¿Cuáles son los beneficios de Fortisol?",
-    "¿Hacen envíos a todo el Perú?",
-    "¿Cómo puedo ser distribuidor?",
+    "¿Cómo es el envío a Lima y Provincias?",
+    "¿Tienen stock disponible?",
     "¿Qué productos recomiendan para el dolor articular?"
   ];
 
@@ -130,8 +154,25 @@ function StoreFront() {
 
     try {
       const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
+      
       if (!webhookUrl) {
-        throw new Error('Webhook URL not configured');
+        // Fallback to Gemini if Webhook is not configured
+        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const response = await ai.models.generateContent({
+          model: "gemini-3-flash-preview",
+          contents: text,
+          config: {
+            systemInstruction: `Eres el asistente virtual de ${BRAND_NAME}. 
+            Ayuda a los clientes con dudas sobre nuestros productos naturales (Omega-3, Flexanil, Fortisol Fit, Bio Alcalin, Gast-Tryn, Probióticos, Aceite de Copaiba y Molle).
+            Sé amable, profesional y enfocado en el bienestar. 
+            Si el cliente quiere comprar, indícale que puede usar el botón "COMPRAR" en el catálogo.
+            No inventes información médica, siempre sugiere consultar con un especialista si la duda es muy específica.`
+          }
+        });
+
+        const botMsg = { role: 'bot' as const, text: response.text || "Lo siento, no pude procesar tu mensaje." };
+        setChatMessages(prev => [...prev, botMsg]);
+        return;
       }
 
       const response = await fetch(webhookUrl, {
@@ -142,6 +183,12 @@ function StoreFront() {
           customer: {
             name: formData.name,
             phone: formData.phone
+          },
+          business_rules: {
+            stock: "Siempre hay stock de todos los productos",
+            shipping_lima: "Envío directo a domicilio con Fortisol",
+            shipping_provincias: "Envío exclusivo por Courier Shalom (recojo en agencia)",
+            free_shipping_threshold: 200
           },
           cart: cart.map(i => ({ name: i.product.name, qty: i.quantity })),
           timestamp: new Date().toISOString()
@@ -166,7 +213,10 @@ function StoreFront() {
 
   useEffect(() => {
     if (isHelpChatOpen && chatMessages.length === 0) {
-      setChatMessages([{ role: 'bot', text: '¡Hola! Soy Sol, tu asistente de Fortisol. ¿En qué puedo ayudarte hoy?' }]);
+      setChatMessages([{ 
+        role: 'bot', 
+        text: '¡Hola! Soy Sol ☀️, tu asistente de Fortisol. Hacemos envíos directos en Lima y a todo el Perú por Shalom. ¿En qué puedo ayudarte hoy?' 
+      }]);
     }
   }, [isHelpChatOpen]);
 
@@ -729,19 +779,30 @@ function StoreFront() {
                     </div>
 
                     {/* Wishlist Button on Card */}
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWishlist(product.id);
-                      }}
-                      className={`absolute right-4 top-4 z-20 rounded-full p-2 transition-all duration-300 opacity-0 group-hover:opacity-100 ${
-                        wishlist.includes(product.id) 
-                          ? 'bg-red-50 text-red-500' 
-                          : 'bg-white/80 backdrop-blur-md text-slate-300 hover:text-red-500'
-                      }`}
-                    >
-                      <Heart size={16} fill={wishlist.includes(product.id) ? "currentColor" : "none"} />
-                    </button>
+                    <div className="absolute right-4 top-4 z-20 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleWishlist(product.id);
+                        }}
+                        className={`rounded-full p-2 transition-all duration-300 ${
+                          wishlist.includes(product.id) 
+                            ? 'bg-red-50 text-red-500' 
+                            : 'bg-white/80 backdrop-blur-md text-slate-300 hover:text-red-500'
+                        }`}
+                      >
+                        <Heart size={16} fill={wishlist.includes(product.id) ? "currentColor" : "none"} />
+                      </button>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShareProduct(product);
+                        }}
+                        className="rounded-full p-2 bg-white/80 backdrop-blur-md text-slate-300 hover:text-black transition-all duration-300"
+                      >
+                        <Share2 size={16} />
+                      </button>
+                    </div>
                   </div>
                   <div className="flex flex-col p-4 text-center">
                     <span className="mb-2 text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">{product.category}</span>
@@ -975,29 +1036,54 @@ function StoreFront() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-white">
+      <section className="py-24 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-[3rem] bg-black px-8 py-16 text-center text-white md:px-16"
+            className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-black via-zinc-900 to-black px-8 py-20 text-center text-white md:px-16"
           >
-            <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
+            <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
             
-            <h2 className="relative z-10 mb-6 text-3xl font-black md:text-6xl uppercase tracking-tighter">¿Listo para sentirte mejor?</h2>
-            <p className="relative z-10 mb-10 mx-auto max-w-2xl text-lg text-slate-400 font-medium leading-relaxed">
-              No dejes que el dolor te detenga. Empieza hoy tu tratamiento con Fortisol y recupera tu vitalidad.
+            <div className="relative z-10 mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 backdrop-blur-md">
+              <Sparkles size={14} />
+              Tratamiento Natural #1 del Perú
+            </div>
+
+            <h2 className="relative z-10 mb-6 text-4xl font-black md:text-7xl uppercase tracking-tighter leading-[0.9]">
+              Tu bienestar <br className="hidden md:block" /> no puede esperar
+            </h2>
+            <p className="relative z-10 mb-12 mx-auto max-w-2xl text-lg text-zinc-400 font-medium leading-relaxed">
+              Únete a miles de peruanos que ya recuperaron su movilidad y energía con Fortisol. 
+              Resultados garantizados desde las primeras semanas de tratamiento.
             </p>
+            
             <button 
-              onClick={() => handleWhatsAppOrder()}
-              className="relative z-10 flex items-center justify-center gap-4 rounded-full bg-white px-10 py-4 text-lg font-black text-black shadow-2xl transition-all hover:scale-105 active:scale-95 mx-auto uppercase tracking-widest"
+              onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
+              className="group relative z-10 flex items-center justify-center gap-4 rounded-full bg-white px-12 py-5 text-xl font-black text-black shadow-2xl transition-all hover:scale-105 active:scale-95 mx-auto uppercase tracking-widest"
             >
-              <MessageCircle size={28} />
-              PEDIR POR WHATSAPP AHORA
+              VER TRATAMIENTOS AHORA
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:translate-x-1">
+                <Sparkles size={18} />
+              </div>
             </button>
-            <p className="mt-8 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Atención inmediata a nivel nacional en Perú</p>
+
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 opacity-50 grayscale">
+              <div className="flex items-center gap-2">
+                <Check size={16} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Garantía de Calidad</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check size={16} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Envío a todo el Perú</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check size={16} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Fórmula 100% Natural</span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -1058,10 +1144,12 @@ function StoreFront() {
                   <MessageCircle size={14} className="text-black" />
                   <a href={`https://wa.me/${settings?.whatsapp || CONTACT_PHONE}`} target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">WhatsApp Nacional</a>
                 </li>
-                <li className="flex items-center gap-4">
-                  <MapPin size={14} className="text-black" />
-                  {settings?.address || COMPANY_ADDRESS}
-                </li>
+                {(settings?.address || COMPANY_ADDRESS) && (
+                  <li className="flex items-center gap-4">
+                    <MapPin size={14} className="text-black" />
+                    {settings?.address || COMPANY_ADDRESS}
+                  </li>
+                )}
                 <li className="flex items-center gap-4 text-black">
                   <Truck size={14} />
                   Envíos a todo el Perú
@@ -1106,7 +1194,7 @@ function StoreFront() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex h-4 w-4 rounded-full bg-emerald-500 border-2 border-white"></span>
           </div>
-          <Bot size={28} className="transition-transform group-hover:scale-110" />
+          <Sun size={28} className="transition-transform group-hover:scale-110" />
           <span className="absolute -left-20 top-1/2 -translate-y-1/2 rounded-lg bg-black px-3 py-1.5 text-[10px] font-black text-white opacity-0 transition-opacity group-hover:opacity-100 uppercase tracking-widest pointer-events-none">
             ¡Hola!
           </span>
@@ -1440,7 +1528,7 @@ function StoreFront() {
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
-                        <Bot size={24} className="text-white" />
+                        <Sun size={24} className="text-white" />
                       </div>
                       <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-emerald-600 bg-emerald-400" />
                     </div>
@@ -1819,6 +1907,79 @@ function StoreFront() {
           </>
         )}
       </AnimatePresence>
+      {/* Share Modal */}
+      <AnimatePresence>
+        {shareProduct && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+            onClick={() => setShareProduct(null)}
+          >
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-sm overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setShareProduct(null)}
+                className="absolute right-6 top-6 z-10 rounded-full bg-slate-100 p-2 text-slate-500 hover:text-black transition-all"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="text-center mb-8">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-50 text-black">
+                  <Share2 size={32} />
+                </div>
+                <h2 className="text-xl font-black uppercase tracking-tighter">Compartir Producto</h2>
+                <p className="mt-2 text-xs font-medium text-slate-400 uppercase tracking-widest">{shareProduct.name}</p>
+              </div>
+
+              <div className="grid gap-3">
+                <button 
+                  onClick={() => shareOnWhatsApp(shareProduct)}
+                  className="flex w-full items-center justify-between rounded-2xl bg-emerald-50 p-4 text-emerald-600 transition-all hover:bg-emerald-100"
+                >
+                  <div className="flex items-center gap-3">
+                    <MessageCircle size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">WhatsApp</span>
+                  </div>
+                  <ChevronRight size={16} />
+                </button>
+
+                <button 
+                  onClick={() => shareOnFacebook(shareProduct)}
+                  className="flex w-full items-center justify-between rounded-2xl bg-blue-50 p-4 text-blue-600 transition-all hover:bg-blue-100"
+                >
+                  <div className="flex items-center gap-3">
+                    <Facebook size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Facebook</span>
+                  </div>
+                  <ChevronRight size={16} />
+                </button>
+
+                <button 
+                  onClick={() => handleCopyLink(shareProduct)}
+                  className="flex w-full items-center justify-between rounded-2xl bg-slate-50 p-4 text-slate-600 transition-all hover:bg-slate-100"
+                >
+                  <div className="flex items-center gap-3">
+                    {copied ? <Check size={20} className="text-emerald-500" /> : <Copy size={20} />}
+                    <span className="text-[10px] font-black uppercase tracking-widest">
+                      {copied ? '¡Copiado!' : 'Copiar Enlace'}
+                    </span>
+                  </div>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Popup Modal */}
       <AnimatePresence>
         {isPopupOpen && popupOffers.length > 0 && (
