@@ -12,6 +12,8 @@ CREATE TABLE products (
   nutritional_info JSONB DEFAULT '{}'::jsonb,
   details JSONB DEFAULT '{}'::jsonb,
   stock INTEGER DEFAULT 0,
+  is_combo BOOLEAN DEFAULT false,
+  combo_product_ids UUID[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -74,6 +76,22 @@ CREATE POLICY "Admin All Orders" ON orders FOR ALL USING (auth.role() = 'authent
 -- Policies for Settings (Public Read, Admin Write)
 CREATE POLICY "Public Read Settings" ON settings FOR SELECT USING (true);
 CREATE POLICY "Admin All Settings" ON settings FOR ALL USING (auth.role() = 'authenticated');
+
+-- Offers Table
+CREATE TABLE offers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  product_id UUID REFERENCES products(id),
+  combo_product_ids UUID[] DEFAULT '{}',
+  image_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  show_in_popup BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE offers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public Read Offers" ON offers FOR SELECT USING (true);
+CREATE POLICY "Admin All Offers" ON offers FOR ALL USING (auth.role() = 'authenticated');
 
 -- 7. Configurar Almacenamiento (Storage)
 -- Crear bucket 'fortisol-assets' manualmente en el panel de Supabase o vía SQL:

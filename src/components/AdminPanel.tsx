@@ -921,6 +921,15 @@ export default function AdminPanel() {
                         {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                       </select>
                     </div>
+                    <div className="col-span-2 flex items-center gap-4">
+                      <input 
+                        type="checkbox" 
+                        checked={editForm.show_in_popup || false}
+                        onChange={e => setEditForm({...editForm, show_in_popup: e.target.checked})}
+                        className="h-5 w-5 rounded border-slate-300 text-black focus:ring-black"
+                      />
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">¿Mostrar en Popup?</label>
+                    </div>
                     <div className="col-span-2 space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Imagen de la Oferta</label>
                       <div className="flex items-center gap-4">

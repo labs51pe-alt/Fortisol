@@ -76,6 +76,8 @@ function StoreFront() {
   // Dynamic Data States
   const [dynamicProducts, setDynamicProducts] = useState<Product[]>([]);
   const [dynamicSlides, setDynamicSlides] = useState<any[]>([]);
+  const [popupOffers, setPopupOffers] = useState<any[]>([]);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
   const [isLoadingData, setIsLoadingData] = useState(true);
   
@@ -139,6 +141,7 @@ function StoreFront() {
     setIsLoadingData(true);
     const { data: pData } = await supabase.from('products').select('*');
     const { data: sData } = await supabase.from('slides').select('*').order('order_index', { ascending: true });
+    const { data: oData } = await supabase.from('offers').select('*').eq('is_active', true).eq('show_in_popup', true).limit(2);
     const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
     
     if (pData && pData.length > 0) setDynamicProducts(pData);
@@ -146,6 +149,11 @@ function StoreFront() {
 
     if (sData && sData.length > 0) setDynamicSlides(sData);
     else setDynamicSlides(introSlides); // Fallback to static
+
+    if (oData && oData.length > 0) {
+      setPopupOffers(oData);
+      setIsPopupOpen(true);
+    }
 
     if (settingsData) setSettings(settingsData.value);
     
@@ -1598,6 +1606,49 @@ function StoreFront() {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+      {/* Popup Modal */}
+      <AnimatePresence>
+        {isPopupOpen && popupOffers.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-2xl"
+            >
+              <button 
+                onClick={() => setIsPopupOpen(false)}
+                className="absolute right-6 top-6 z-10 rounded-full bg-slate-100 p-2 text-slate-500 hover:text-black transition-colors"
+              >
+                <X size={20} />
+              </button>
+              <h2 className="text-2xl font-black uppercase tracking-tighter mb-8 text-center">Ofertas Especiales</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                {popupOffers.map(offer => (
+                  <div key={offer.id} className="rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 p-4">
+                    <img src={offer.image_url} alt={offer.title} className="w-full h-40 object-cover rounded-xl mb-4" />
+                    <h3 className="text-sm font-black uppercase tracking-tight mb-2">{offer.title}</h3>
+                    <button 
+                      onClick={() => {
+                        setIsPopupOpen(false);
+                        document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-full rounded-full bg-black py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all"
+                    >
+                      VER PRODUCTO
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

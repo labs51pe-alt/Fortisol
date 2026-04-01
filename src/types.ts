@@ -5,6 +5,7 @@ export interface Offer {
   description?: string;
   image_url: string;
   is_active: boolean;
+  show_in_popup: boolean;
 }
 
 export interface Product {
