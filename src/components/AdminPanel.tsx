@@ -28,14 +28,15 @@ import {
   LogIn
 } from 'lucide-react';
 
-import { Product, Slide, CompanySettings } from '../types';
+import { Product, Slide, CompanySettings, Offer } from '../types';
 
 export default function AdminPanel() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'products' | 'slides' | 'settings' | 'crm'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'slides' | 'settings' | 'crm' | 'offers'>('products');
   const [products, setProducts] = useState<Product[]>([]);
   const [slides, setSlides] = useState<Slide[]>([]);
+  const [offers, setOffers] = useState<Offer[]>([]);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState<string | null>(null);
@@ -52,10 +53,12 @@ export default function AdminPanel() {
     try {
       const { data: productsData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
       const { data: slidesData } = await supabase.from('slides').select('*').order('order_index', { ascending: true });
+      const { data: offersData } = await supabase.from('offers').select('*');
       const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
       
       if (productsData) setProducts(productsData);
       if (slidesData) setSlides(slidesData);
+      if (offersData) setOffers(offersData);
       if (settingsData) setSettings(settingsData.value);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -191,6 +194,35 @@ export default function AdminPanel() {
     setLoading(false);
   };
 
+  const handleSaveOffer = async (offer: Partial<Offer>) => {
+    setLoading(true);
+    const { error } = offer.id 
+      ? await supabase.from('offers').update(offer).eq('id', offer.id)
+      : await supabase.from('offers').insert([offer]);
+
+    if (error) {
+      setStatus({ type: 'error', message: 'Error al guardar la oferta: ' + error.message });
+    } else {
+      setStatus({ type: 'success', message: 'Oferta guardada correctamente' });
+      setIsEditing(null);
+      fetchData();
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteOffer = async (id: string) => {
+    if (!confirm('¿Estás seguro de eliminar esta oferta?')) return;
+    setLoading(true);
+    const { error } = await supabase.from('offers').delete().eq('id', id);
+    if (error) {
+      setStatus({ type: 'error', message: 'Error al eliminar: ' + error.message });
+    } else {
+      setStatus({ type: 'success', message: 'Oferta eliminada' });
+      fetchData();
+    }
+    setLoading(false);
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Simple password check - in a real app this should be more secure
@@ -297,6 +329,12 @@ export default function AdminPanel() {
               <Layout size={14} /> Diapositivas
             </button>
             <button 
+              onClick={() => setActiveTab('offers')}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'offers' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+            >
+              <Package size={14} /> Ofertas
+            </button>
+            <button 
               onClick={() => setActiveTab('settings')}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
             >
@@ -328,7 +366,7 @@ export default function AdminPanel() {
 
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-black tracking-tight uppercase">
-            {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : activeTab === 'crm' ? 'Gestión de Pedidos y Clientes' : 'Configuración de Empresa'}
+            {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : activeTab === 'offers' ? 'Gestión de Ofertas' : activeTab === 'crm' ? 'Gestión de Pedidos y Clientes' : 'Configuración de Empresa'}
           </h2>
           {activeTab !== 'settings' && activeTab !== 'crm' && (
             <button 
@@ -344,11 +382,16 @@ export default function AdminPanel() {
                   benefits: [],
                   usage: '',
                   nutritional_info: { servingSize: '', servingsPerContainer: '', energy: '' }
+                } : activeTab === 'offers' ? {
+                  title: '',
+                  product_id: '',
+                  image_url: '',
+                  is_active: true
                 } : { title: '', subtitle: '', image_url: '', button_text: 'Comprar Ahora', button_link: '#productos', order_index: slides.length });
               }}
               className="flex items-center gap-2 rounded-full bg-black px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95 shadow-xl shadow-black/10"
             >
-              <Plus size={16} /> {activeTab === 'products' ? 'Nuevo Producto' : 'Nueva Diapositiva'}
+              <Plus size={16} /> {activeTab === 'products' ? 'Nuevo Producto' : activeTab === 'offers' ? 'Nueva Oferta' : 'Nueva Diapositiva'}
             </button>
           )}
         </div>
@@ -433,6 +476,45 @@ export default function AdminPanel() {
               <Layout size={48} className="text-slate-200 mb-4" />
               <p className="text-slate-400 font-bold">No hay diapositivas en el carrusel</p>
               <p className="text-slate-300 text-xs mt-1">Añade imágenes para el banner principal</p>
+            </div>
+          )
+        ) : activeTab === 'offers' ? (
+          offers.length > 0 ? (
+            <div className="space-y-4">
+              {offers.map(offer => (
+                <div key={offer.id} className="flex items-center gap-6 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                  <div className="h-24 w-40 overflow-hidden rounded-2xl bg-slate-100">
+                    <img src={offer.image_url} alt={offer.title} className="h-full w-full object-cover" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-black tracking-tight">{offer.title}</h3>
+                    <p className="text-xs text-slate-500">{products.find(p => p.id === offer.product_id)?.name || 'Producto no encontrado'}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        setIsEditing(offer.id);
+                        setEditForm(offer);
+                      }}
+                      className="rounded-full bg-slate-100 p-3 text-black hover:bg-black hover:text-white transition-all"
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteOffer(offer.id)}
+                      className="rounded-full bg-slate-100 p-3 text-rose-600 hover:bg-rose-600 hover:text-white transition-all"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border border-dashed border-slate-200">
+              <Package size={48} className="text-slate-200 mb-4" />
+              <p className="text-slate-400 font-bold">No hay ofertas registradas</p>
+              <p className="text-slate-300 text-xs mt-1">Haz clic en "Nueva Oferta" para comenzar</p>
             </div>
           )
         ) : activeTab === 'crm' ? (
@@ -597,7 +679,7 @@ export default function AdminPanel() {
           <div className="relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 p-8">
               <h3 className="text-xl font-black tracking-tight uppercase">
-                {isEditing === 'new' ? 'Crear Nuevo' : 'Editar'} {activeTab === 'products' ? 'Producto' : 'Diapositiva'}
+                {isEditing === 'new' ? 'Crear Nuevo' : 'Editar'} {activeTab === 'products' ? 'Producto' : activeTab === 'offers' ? 'Oferta' : 'Diapositiva'}
               </h3>
               <button onClick={() => setIsEditing(null)} className="rounded-full bg-slate-100 p-2 text-slate-400 hover:text-black transition-colors">
                 <X size={20} />
@@ -793,6 +875,53 @@ export default function AdminPanel() {
                       </div>
                     </div>
                   </>
+                ) : activeTab === 'offers' ? (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Título</label>
+                      <input 
+                        type="text" 
+                        value={editForm.title} 
+                        onChange={e => setEditForm({...editForm, title: e.target.value})}
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Producto</label>
+                      <select 
+                        value={editForm.product_id} 
+                        onChange={e => setEditForm({...editForm, product_id: e.target.value})}
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                      >
+                        <option value="">Seleccionar producto</option>
+                        {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Imagen de la Oferta</label>
+                      <div className="flex items-center gap-4">
+                        {editForm.image_url && (
+                          <div className="relative aspect-video w-40 rounded-2xl overflow-hidden border border-slate-100 bg-slate-50">
+                            <img src={editForm.image_url} alt="Preview" className="h-full w-full object-cover" />
+                          </div>
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={handleUpload}
+                          className="hidden"
+                          id="offer-image-upload"
+                        />
+                        <label 
+                          htmlFor="offer-image-upload"
+                          className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-8 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400 transition-all hover:border-black hover:text-black"
+                        >
+                          {uploading ? <Loader2 className="animate-spin" size={16} /> : <ImageIcon size={20} />}
+                          {uploading ? 'Subiendo...' : 'Cambiar Imagen'}
+                        </label>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div className="col-span-2 space-y-2">
@@ -869,8 +998,12 @@ export default function AdminPanel() {
 
             <div className="border-t border-slate-100 p-8">
               <button 
-                onClick={() => activeTab === 'products' ? handleSaveProduct(editForm) : handleSaveSlide(editForm)}
-                className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-5 text-[11px] font-black text-white transition-all hover:bg-slate-800 shadow-xl shadow-black/10"
+                onClick={() => {
+                  if (activeTab === 'products') handleSaveProduct(editForm);
+                  else if (activeTab === 'offers') handleSaveOffer(editForm);
+                  else handleSaveSlide(editForm);
+                }}
+                className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-slate-800 shadow-xl shadow-black/10"
               >
                 <Save size={18} /> GUARDAR CAMBIOS
               </button>

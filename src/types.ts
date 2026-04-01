@@ -1,3 +1,12 @@
+export interface Offer {
+  id: string;
+  product_id: string;
+  title: string;
+  description?: string;
+  image_url: string;
+  is_active: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
