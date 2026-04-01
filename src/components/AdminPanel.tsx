@@ -111,6 +111,50 @@ export default function AdminPanel() {
     setUploading(false);
   };
 
+  const NavButtons = () => (
+    <>
+      <button 
+        onClick={() => { setActiveTab('products'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'products' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+      >
+        <Package size={14} /> Productos
+      </button>
+      <button 
+        onClick={() => { setActiveTab('crm'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+      >
+        <Users size={14} /> CRM
+      </button>
+      <button 
+        onClick={() => { setActiveTab('slides'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'slides' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+      >
+        <Layout size={14} /> Diapositivas
+      </button>
+      <button 
+        onClick={() => { setActiveTab('offers'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'offers' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+      >
+        <Package size={14} /> Ofertas
+      </button>
+      <button 
+        onClick={() => { setActiveTab('settings'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+      >
+        <SettingsIcon size={14} /> Configuración
+      </button>
+      <button 
+        onClick={() => {
+          localStorage.removeItem('admin_auth');
+          setIsAuthorized(false);
+        }}
+        className="flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all"
+      >
+        Salir
+      </button>
+    </>
+  );
+
   const removeImage = (index: number) => {
     const newImages = [...(editForm.images || [])];
     newImages.splice(index, 1);
@@ -302,58 +346,38 @@ export default function AdminPanel() {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6 md:py-4">
           <div className="flex items-center gap-4">
             <a href="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black transition-colors hover:bg-black hover:text-white">
               <ArrowLeft size={20} />
             </a>
-            <h1 className="text-xl font-black tracking-tight">PANEL ADMIN <span className="text-slate-400 font-medium">FORTISOL</span></h1>
+            <h1 className="text-lg md:text-xl font-black tracking-tight">PANEL ADMIN</h1>
           </div>
-          <div className="flex items-center gap-2 rounded-full bg-slate-100 p-1">
-            <button 
-              onClick={() => setActiveTab('products')}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'products' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
-            >
-              <Package size={14} /> Productos
-            </button>
-            <button 
-              onClick={() => setActiveTab('crm')}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
-            >
-              <Users size={14} /> CRM
-            </button>
-            <button 
-              onClick={() => setActiveTab('slides')}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'slides' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
-            >
-              <Layout size={14} /> Diapositivas
-            </button>
-            <button 
-              onClick={() => setActiveTab('offers')}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'offers' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
-            >
-              <Package size={14} /> Ofertas
-            </button>
-            <button 
-              onClick={() => setActiveTab('settings')}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
-            >
-              <SettingsIcon size={14} /> Configuración
-            </button>
-            <button 
-              onClick={() => {
-                localStorage.removeItem('admin_auth');
-                setIsAuthorized(false);
-              }}
-              className="flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all"
-            >
-              Salir
-            </button>
+          
+          {/* Mobile Menu Button */}
+          <button className="md:hidden p-2" onClick={() => {
+            const menu = document.getElementById('mobile-menu');
+            menu?.classList.toggle('hidden');
+          }}>
+            <Layout size={24} />
+          </button>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-2 rounded-full bg-slate-100 p-1">
+            <NavButtons />
+          </div>
+        </div>
+        
+        {/* Mobile Navigation */}
+        <div id="mobile-menu" className="hidden md:hidden border-t border-slate-200 bg-white p-4">
+          <div className="flex flex-col gap-2">
+            <NavButtons />
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl p-6">
+
+      <main className="mx-auto max-w-7xl p-4 md:p-6">
         {status && (
           <div className={`mb-6 flex items-center justify-between rounded-2xl p-4 ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'}`}>
             <div className="flex items-center gap-3">
@@ -364,8 +388,8 @@ export default function AdminPanel() {
           </div>
         )}
 
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-black tracking-tight uppercase">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+          <h2 className="text-lg md:text-2xl font-black tracking-tight uppercase">
             {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : activeTab === 'offers' ? 'Gestión de Ofertas' : activeTab === 'crm' ? 'Gestión de Pedidos y Clientes' : 'Configuración de Empresa'}
           </h2>
           {activeTab !== 'settings' && activeTab !== 'crm' && (
@@ -389,7 +413,7 @@ export default function AdminPanel() {
                   is_active: true
                 } : { title: '', subtitle: '', image_url: '', button_text: 'Comprar Ahora', button_link: '#productos', order_index: slides.length });
               }}
-              className="flex items-center gap-2 rounded-full bg-black px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95 shadow-xl shadow-black/10"
+              className="flex items-center justify-center gap-2 rounded-full bg-black px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95 shadow-xl shadow-black/10 w-full md:w-auto"
             >
               <Plus size={16} /> {activeTab === 'products' ? 'Nuevo Producto' : activeTab === 'offers' ? 'Nueva Oferta' : 'Nueva Diapositiva'}
             </button>
@@ -443,11 +467,11 @@ export default function AdminPanel() {
           slides.length > 0 ? (
             <div className="space-y-4">
               {slides.map(slide => (
-                <div key={slide.id} className="flex items-center gap-6 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
-                  <div className="h-24 w-40 overflow-hidden rounded-2xl bg-slate-100">
+                <div key={slide.id} className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                  <div className="h-24 w-full md:w-40 overflow-hidden rounded-2xl bg-slate-100">
                     <img src={slide.image_url} alt={slide.title} className="h-full w-full object-cover" />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 w-full text-center md:text-left">
                     <h3 className="text-sm font-black tracking-tight">{slide.title}</h3>
                     <p className="text-xs text-slate-500">{slide.subtitle}</p>
                   </div>
@@ -482,11 +506,11 @@ export default function AdminPanel() {
           offers.length > 0 ? (
             <div className="space-y-4">
               {offers.map(offer => (
-                <div key={offer.id} className="flex items-center gap-6 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
-                  <div className="h-24 w-40 overflow-hidden rounded-2xl bg-slate-100">
+                <div key={offer.id} className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                  <div className="h-24 w-full md:w-40 overflow-hidden rounded-2xl bg-slate-100">
                     <img src={offer.image_url} alt={offer.title} className="h-full w-full object-cover" />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 w-full text-center md:text-left">
                     <h3 className="text-sm font-black tracking-tight">{offer.title}</h3>
                     <p className="text-xs text-slate-500">{products.find(p => p.id === offer.product_id)?.name || 'Producto no encontrado'}</p>
                   </div>
