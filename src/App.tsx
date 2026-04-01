@@ -40,7 +40,10 @@ import {
   Download,
   Leaf,
   Zap,
-  Check
+  Check,
+  Bot,
+  Send,
+  Loader2
 } from 'lucide-react';
 import { 
   PRODUCTS, 
@@ -103,6 +106,69 @@ function StoreFront() {
     province: '',
     district: ''
   });
+
+  // Help Chat States
+  const [isHelpChatOpen, setIsHelpChatOpen] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'bot', text: string }[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+
+  const predefinedQuestions = [
+    "¿Cuáles son los beneficios de Fortisol?",
+    "¿Hacen envíos a todo el Perú?",
+    "¿Cómo puedo ser distribuidor?",
+    "¿Qué productos recomiendan para el dolor articular?"
+  ];
+
+  const handleSendMessage = async (text: string) => {
+    if (!text.trim() || isChatLoading) return;
+
+    const userMsg = { role: 'user' as const, text };
+    setChatMessages(prev => [...prev, userMsg]);
+    setChatInput('');
+    setIsChatLoading(true);
+
+    try {
+      const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
+      if (!webhookUrl) {
+        throw new Error('Webhook URL not configured');
+      }
+
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: text,
+          customer: {
+            name: formData.name,
+            phone: formData.phone
+          },
+          cart: cart.map(i => ({ name: i.product.name, qty: i.quantity })),
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Handle different possible response formats from n8n
+        const botText = data.output || data.message || data.text || 'Gracias por tu mensaje. Un asesor te contactará pronto.';
+        setChatMessages(prev => [...prev, { role: 'bot', text: botText }]);
+      } else {
+        throw new Error('Error en el servidor');
+      }
+    } catch (error) {
+      console.error('Chat Error:', error);
+      setChatMessages(prev => [...prev, { role: 'bot', text: 'Lo siento, hubo un problema al conectar con el asistente. Por favor, intenta de nuevo o contáctanos por WhatsApp.' }]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isHelpChatOpen && chatMessages.length === 0) {
+      setChatMessages([{ role: 'bot', text: '¡Hola! Soy Sol, tu asistente de Fortisol. ¿En qué puedo ayudarte hoy?' }]);
+    }
+  }, [isHelpChatOpen]);
 
   useEffect(() => {
     fetchDynamicData();
@@ -1027,19 +1093,24 @@ function StoreFront() {
             </span>
           )}
         </motion.button>
-        
-        {(!settings || settings.show_whatsapp) && (
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => window.open(`https://wa.me/${settings?.whatsapp || CONTACT_PHONE}`, '_blank')}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-2xl shadow-black/40"
-          >
-            <MessageCircle size={28} />
-          </motion.button>
-        )}
+
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setIsHelpChatOpen(true)}
+          className="group relative flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-xl shadow-emerald-200 transition-all hover:bg-emerald-500"
+        >
+          <div className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex h-4 w-4 rounded-full bg-emerald-500 border-2 border-white"></span>
+          </div>
+          <Bot size={28} className="transition-transform group-hover:scale-110" />
+          <span className="absolute -left-20 top-1/2 -translate-y-1/2 rounded-lg bg-black px-3 py-1.5 text-[10px] font-black text-white opacity-0 transition-opacity group-hover:opacity-100 uppercase tracking-widest pointer-events-none">
+            ¡Hola!
+          </span>
+        </motion.button>
       </div>
 
       {/* Promo Popup (Organa Style) */}
@@ -1342,6 +1413,135 @@ function StoreFront() {
         )}
       </AnimatePresence>
 
+      {/* Help Chat Drawer */}
+      <AnimatePresence>
+        {isHelpChatOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsHelpChatOpen(false)}
+              className="fixed inset-0 z-[110] bg-black/20 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed bottom-0 right-0 top-0 z-[120] flex h-full w-full max-w-[400px] flex-col bg-white shadow-2xl md:h-[calc(100%-2rem)] md:top-4 md:right-4 md:rounded-[2.5rem] md:bottom-4"
+            >
+              {/* Chat Header */}
+              <div className="relative overflow-hidden rounded-t-[2.5rem] bg-emerald-600 p-6 text-white md:p-8">
+                <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+                <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/10 blur-2xl" />
+                
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
+                        <Bot size={24} className="text-white" />
+                      </div>
+                      <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-emerald-600 bg-emerald-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-black uppercase tracking-[0.2em]">Sol</h2>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-medium text-emerald-100">Asistente Virtual</span>
+                        <span className="h-1 w-1 rounded-full bg-emerald-300" />
+                        <span className="text-[10px] font-medium text-emerald-100">En línea</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setIsHelpChatOpen(false)} 
+                    className="rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 overflow-y-auto p-6 no-scrollbar space-y-6 bg-slate-50/50">
+                {chatMessages.map((msg, idx) => (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    key={idx} 
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div className={`relative max-w-[85%] rounded-3xl px-5 py-4 text-xs font-medium shadow-sm ${
+                      msg.role === 'user' 
+                        ? 'bg-emerald-600 text-white rounded-tr-none' 
+                        : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'
+                    }`}>
+                      {msg.text}
+                      <span className={`absolute top-0 text-[8px] opacity-30 ${msg.role === 'user' ? '-left-8' : '-right-8'}`}>
+                        {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+                {isChatLoading && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex justify-start"
+                  >
+                    <div className="bg-white text-slate-400 border border-slate-100 rounded-3xl rounded-tl-none px-6 py-4 shadow-sm flex gap-1">
+                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Chat Input Area */}
+              <div className="bg-white p-6 md:p-8 space-y-6 rounded-b-[2.5rem]">
+                {chatMessages.length <= 1 && (
+                  <div className="flex flex-wrap gap-2">
+                    {predefinedQuestions.map((q, idx) => (
+                      <motion.button 
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        key={idx}
+                        onClick={() => handleSendMessage(q)}
+                        className="text-left rounded-2xl border border-slate-100 bg-slate-50 px-4 py-2.5 text-[9px] font-black uppercase tracking-wider text-slate-500 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-all"
+                      >
+                        {q}
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
+                
+                <div className="relative group">
+                  <input 
+                    type="text"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatInput)}
+                    placeholder="Escribe tu duda aquí..."
+                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 pl-6 pr-14 py-4 text-xs font-medium focus:border-emerald-600 focus:bg-white focus:outline-none transition-all shadow-inner"
+                  />
+                  <button 
+                    onClick={() => handleSendMessage(chatInput)}
+                    disabled={!chatInput.trim() || isChatLoading}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-600 p-2.5 text-white hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-lg shadow-emerald-600/20"
+                  >
+                    <Send size={18} />
+                  </button>
+                </div>
+                <p className="text-center text-[8px] font-black uppercase tracking-widest text-slate-300">
+                  Impulsado por Fortisol AI
+                </p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Cart Drawer */}
       <AnimatePresence>
         {isCartOpen && (
@@ -1377,6 +1577,23 @@ function StoreFront() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
+                {checkoutStep === 1 && cart.length > 0 && (
+                  <div className="mb-8 rounded-2xl bg-slate-50 p-4 border border-slate-100">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                        {cartTotal >= 200 ? '¡Tienes envío gratis!' : `Faltan S/ ${200 - cartTotal} para envío gratis`}
+                      </span>
+                      <Truck size={14} className={cartTotal >= 200 ? 'text-emerald-500' : 'text-slate-300'} />
+                    </div>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, (cartTotal / 200) * 100)}%` }}
+                        className={`h-full ${cartTotal >= 200 ? 'bg-emerald-500' : 'bg-black'}`}
+                      />
+                    </div>
+                  </div>
+                )}
                 {checkoutStep === 1 ? (
                   cart.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center text-center">
