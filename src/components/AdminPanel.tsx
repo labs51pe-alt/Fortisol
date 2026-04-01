@@ -166,10 +166,18 @@ export default function AdminPanel() {
   };
 
   const handleSaveProduct = async (product: Partial<Product>) => {
+    // Clean up combo_product_ids if not a combo
+    const dataToSave = { ...product };
+    if (!dataToSave.is_combo) {
+      dataToSave.combo_product_ids = [];
+    } else if (dataToSave.combo_product_ids && Array.isArray(dataToSave.combo_product_ids)) {
+      dataToSave.combo_product_ids = dataToSave.combo_product_ids.filter(id => id && id !== '');
+    }
+    
     setLoading(true);
-    const { error } = product.id 
-      ? await supabase.from('products').update(product).eq('id', product.id)
-      : await supabase.from('products').insert([product]);
+    const { error } = dataToSave.id 
+      ? await supabase.from('products').update(dataToSave).eq('id', dataToSave.id)
+      : await supabase.from('products').insert([dataToSave]);
 
     if (error) {
       setStatus({ type: 'error', message: 'Error al guardar el producto: ' + error.message });
@@ -239,10 +247,22 @@ export default function AdminPanel() {
   };
 
   const handleSaveOffer = async (offer: Partial<Offer>) => {
+    if (!offer.product_id || offer.product_id === '') {
+      setStatus({ type: 'error', message: 'Debes seleccionar un producto para la oferta' });
+      return;
+    }
+
+    // Ensure we don't send empty strings for UUID fields
+    const dataToSave = { ...offer };
+    if (dataToSave.product_id === '') delete dataToSave.product_id;
+    if (dataToSave.combo_product_ids && Array.isArray(dataToSave.combo_product_ids)) {
+      dataToSave.combo_product_ids = dataToSave.combo_product_ids.filter(id => id && id !== '');
+    }
+    
     setLoading(true);
-    const { error } = offer.id 
-      ? await supabase.from('offers').update(offer).eq('id', offer.id)
-      : await supabase.from('offers').insert([offer]);
+    const { error } = dataToSave.id 
+      ? await supabase.from('offers').update(dataToSave).eq('id', dataToSave.id)
+      : await supabase.from('offers').insert([dataToSave]);
 
     if (error) {
       setStatus({ type: 'error', message: 'Error al guardar la oferta: ' + error.message });
@@ -738,7 +758,7 @@ export default function AdminPanel() {
                         <input 
                           type="text" 
                           value={editForm.combo_product_ids?.join(', ') || ''} 
-                          onChange={e => setEditForm({...editForm, combo_product_ids: e.target.value.split(',').map(s => s.trim())})}
+                          onChange={e => setEditForm({...editForm, combo_product_ids: e.target.value.split(',').map(s => s.trim()).filter(s => s !== '')})}
                           className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                         />
                       </div>

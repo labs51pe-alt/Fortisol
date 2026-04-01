@@ -6,6 +6,7 @@ export interface Offer {
   image_url: string;
   is_active: boolean;
   show_in_popup: boolean;
+  combo_product_ids?: string[];
 }
 
 export interface Product {

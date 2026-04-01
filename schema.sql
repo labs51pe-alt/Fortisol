@@ -1,5 +1,8 @@
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Products Table
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   description TEXT,
@@ -18,7 +21,7 @@ CREATE TABLE products (
 );
 
 -- Slides Table (Home Carousel)
-CREATE TABLE slides (
+CREATE TABLE IF NOT EXISTS slides (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   image_url TEXT NOT NULL,
   title TEXT,
@@ -30,7 +33,7 @@ CREATE TABLE slides (
 );
 
 -- Orders Table (CRM)
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   customer_name TEXT NOT NULL,
   customer_phone TEXT NOT NULL,
@@ -48,37 +51,15 @@ CREATE TABLE orders (
 );
 
 -- Settings Table (Company Info & Social Media)
-CREATE TABLE settings (
+CREATE TABLE IF NOT EXISTS settings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   key TEXT UNIQUE NOT NULL,
   value JSONB NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable Row Level Security (RLS)
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE slides ENABLE ROW LEVEL SECURITY;
-ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
-
--- Policies for Products (Public Read, Admin Write)
-CREATE POLICY "Public Read Products" ON products FOR SELECT USING (true);
-CREATE POLICY "Admin All Products" ON products FOR ALL USING (auth.role() = 'authenticated');
-
--- Policies for Slides (Public Read, Admin Write)
-CREATE POLICY "Public Read Slides" ON slides FOR SELECT USING (true);
-CREATE POLICY "Admin All Slides" ON slides FOR ALL USING (auth.role() = 'authenticated');
-
--- Policies for Orders (Admin All, Public Create)
-CREATE POLICY "Public Create Orders" ON orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Admin All Orders" ON orders FOR ALL USING (auth.role() = 'authenticated');
-
--- Policies for Settings (Public Read, Admin Write)
-CREATE POLICY "Public Read Settings" ON settings FOR SELECT USING (true);
-CREATE POLICY "Admin All Settings" ON settings FOR ALL USING (auth.role() = 'authenticated');
-
 -- Offers Table
-CREATE TABLE offers (
+CREATE TABLE IF NOT EXISTS offers (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title TEXT NOT NULL,
   product_id UUID REFERENCES products(id),
@@ -89,9 +70,12 @@ CREATE TABLE offers (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-ALTER TABLE offers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public Read Offers" ON offers FOR SELECT USING (true);
-CREATE POLICY "Admin All Offers" ON offers FOR ALL USING (auth.role() = 'authenticated');
+-- Disable Row Level Security (RLS) for tables that use custom frontend authentication
+ALTER TABLE products DISABLE ROW LEVEL SECURITY;
+ALTER TABLE slides DISABLE ROW LEVEL SECURITY;
+ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
+ALTER TABLE settings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE offers DISABLE ROW LEVEL SECURITY;
 
 -- 7. Configurar Almacenamiento (Storage)
 -- Crear bucket 'fortisol-assets' manualmente en el panel de Supabase o vía SQL:
