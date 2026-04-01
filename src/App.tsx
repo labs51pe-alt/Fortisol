@@ -39,7 +39,8 @@ import {
   ChevronLeft,
   Download,
   Leaf,
-  Zap
+  Zap,
+  Check
 } from 'lucide-react';
 import { 
   PRODUCTS, 
@@ -1162,13 +1163,44 @@ function StoreFront() {
                 <X size={20} className="md:w-6 md:h-6" />
               </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 max-h-[90vh] overflow-y-auto no-scrollbar">
-                {/* Left Side: Image & Info */}
-                <div className="flex flex-col bg-slate-50">
-                  <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-16">
-                    <div className="aspect-square w-full max-w-[300px] md:max-w-none overflow-hidden mb-6 md:mb-8">
+              <div className="flex flex-col max-h-[90vh] overflow-y-auto no-scrollbar">
+                {/* Header: Name & Price (First on Mobile) */}
+                <div className="p-6 md:p-12 pb-0 md:pb-0">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">{selectedProduct.brand || BRAND_NAME}</span>
+                        {selectedProduct.originalPrice && (
+                          <div className="rounded-full bg-red-500 px-3 py-1 text-[9px] font-black text-white uppercase tracking-widest shadow-lg shadow-red-500/20">
+                            -{Math.round((1 - selectedProduct.price / selectedProduct.originalPrice) * 100)}%
+                          </div>
+                        )}
+                      </div>
+                      <h2 className="text-3xl md:text-6xl font-black text-black tracking-tighter leading-[0.85] uppercase">{selectedProduct.name}</h2>
+                      <div className="flex items-center gap-4">
+                        <div className="flex text-black gap-0.5">
+                          {[1, 2, 3, 4, 5].map(i => (
+                            <Star key={i} size={12} fill={i <= Math.floor(selectedProduct.rating || 4) ? "currentColor" : "none"} />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">({selectedProduct.reviewsCount || 156}) reseñas</span>
+                      </div>
+                    </div>
+                    <div className="flex items-baseline gap-4">
+                      <p className="text-4xl md:text-6xl font-black text-black tracking-tighter">S/ {selectedProduct.price}</p>
+                      {selectedProduct.originalPrice && (
+                        <p className="text-xl md:text-2xl font-bold text-slate-300 line-through tracking-tighter">S/ {selectedProduct.originalPrice}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  {/* Left Side: Image & Gallery */}
+                  <div className="flex flex-col p-6 md:p-12">
+                    <div className="aspect-square w-full max-w-[400px] mx-auto overflow-hidden mb-8">
                       <img 
-                        src={(selectedProduct as any).images?.[activeImageIndex] || (selectedProduct as any).image_url || selectedProduct.image} 
+                        src={(selectedProduct as any).images?.[activeImageIndex] || (selectedProduct as any).image_url || (selectedProduct as any).image} 
                         alt={selectedProduct.name} 
                         className="h-full w-full object-contain drop-shadow-2xl"
                         referrerPolicy="no-referrer"
@@ -1177,12 +1209,12 @@ function StoreFront() {
                     
                     {/* Thumbnail Gallery */}
                     {(selectedProduct as any).images && (selectedProduct as any).images.length > 1 && (
-                      <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 no-scrollbar w-full justify-center">
+                      <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar justify-center">
                         {(selectedProduct as any).images.map((img: string, idx: number) => (
                           <button
                             key={idx}
                             onClick={() => setActiveImageIndex(idx)}
-                            className={`h-14 w-14 md:h-20 md:w-20 shrink-0 rounded-xl md:rounded-2xl overflow-hidden border-2 transition-all ${activeImageIndex === idx ? 'border-black scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                            className={`h-16 w-16 shrink-0 rounded-2xl overflow-hidden border-2 transition-all ${activeImageIndex === idx ? 'border-black scale-105' : 'border-transparent opacity-60 hover:opacity-100'}`}
                           >
                             <img src={img} alt={`Thumbnail ${idx}`} className="h-full w-full object-cover" />
                           </button>
@@ -1190,156 +1222,130 @@ function StoreFront() {
                       </div>
                     )}
                   </div>
-                  
-                  {/* Nutritional Info / How to Consume Placeholder */}
-                  <div className="p-6 md:p-12 bg-white border-t border-slate-100">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12">
-                      <div>
-                        <h4 className="mb-4 md:mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">Información Nutricional</h4>
-                        <div className="space-y-3 text-[11px] text-slate-500">
-                          <div className="flex justify-between border-b border-slate-100 pb-2">
-                            <span className="font-medium">Tamaño de Porción</span>
-                            <span className="font-black text-black">{selectedProduct.nutritional_info?.servingSize || 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between border-b border-slate-100 pb-2">
-                            <span className="font-medium">Porciones por envase</span>
-                            <span className="font-black text-black">{selectedProduct.nutritional_info?.servingsPerContainer || 'N/A'}</span>
-                          </div>
-                          <div className="flex justify-between border-b border-slate-100 pb-2">
-                            <span className="font-medium">Energía / Calorías</span>
-                            <span className="font-black text-black">{selectedProduct.nutritional_info?.energy || 'N/A'}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="mb-4 md:mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">¿Cómo consumirlo?</h4>
-                        <div className="flex items-start gap-4">
-                          <div className="h-8 w-8 shrink-0 flex items-center justify-center rounded-full bg-black text-white text-[11px] font-black shadow-lg shadow-black/20">1</div>
-                          <p className="text-[11px] text-slate-500 leading-relaxed font-medium">{selectedProduct.usage || 'Consultar empaque.'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Right Side: Details & Actions */}
-                <div className="flex flex-col p-6 md:p-16">
-                  <div className="mb-6 md:mb-8">
-                    <div className="flex items-center justify-between mb-4 md:mb-6">
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">{selectedProduct.brand || BRAND_NAME}</span>
-                        <span className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">SKU: {selectedProduct.sku || '7759283000221'}</span>
-                      </div>
-                      {selectedProduct.originalPrice && (
-                        <div className="rounded-full bg-red-500 px-3 py-1 md:px-4 md:py-1.5 text-[9px] md:text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-red-500/20">
-                          -{Math.round((1 - selectedProduct.price / selectedProduct.originalPrice) * 100)}%
-                        </div>
-                      )}
-                    </div>
-                    
-                    <h2 className="mb-4 md:mb-6 text-3xl md:text-5xl font-black text-black tracking-tighter leading-[0.9] uppercase">{selectedProduct.name}</h2>
-                    
-                    <div className="flex items-center gap-4 mb-6 md:mb-8">
-                      <div className="flex text-black gap-0.5">
-                        {[1, 2, 3, 4, 5].map(i => (
-                          <Star key={i} size={12} className="md:w-[14px] md:h-[14px]" fill={i <= Math.floor(selectedProduct.rating || 4) ? "currentColor" : "none"} />
-                        ))}
-                      </div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">({selectedProduct.reviewsCount || 156}) reseñas</span>
-                    </div>
-
-                    <div className="flex items-baseline gap-4 mb-6 md:mb-10">
-                      <p className="text-3xl md:text-5xl font-black text-black tracking-tighter">S/ {selectedProduct.price}</p>
-                      {selectedProduct.originalPrice && (
-                        <p className="text-xl md:text-2xl font-bold text-slate-300 line-through tracking-tighter">S/ {selectedProduct.originalPrice}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="mb-8 md:mb-12 space-y-8 md:space-y-10">
-                    <div>
-                      <h4 className="mb-4 md:mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">Beneficios:</h4>
-                      <ul className="space-y-3 md:space-y-4">
+                  {/* Right Side: Benefits & Usage */}
+                  <div className="flex flex-col p-6 md:p-12 pt-0 md:pt-12">
+                    <div className="mb-10 p-6 rounded-[2rem] bg-slate-50 border border-slate-100">
+                      <h4 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black flex items-center gap-2">
+                        <div className="h-1.5 w-1.5 rounded-full bg-black" /> Beneficios Destacados
+                      </h4>
+                      <ul className="grid grid-cols-1 gap-4">
                         {selectedProduct.benefits?.map((b, i) => (
-                          <li key={i} className="flex items-center gap-3 md:gap-4 text-xs text-slate-600 font-bold">
-                            <div className="flex h-6 w-6 md:h-7 md:w-7 shrink-0 items-center justify-center rounded-lg md:rounded-xl bg-slate-50 border border-slate-100 text-[9px] md:text-[10px] font-black text-black shadow-sm">
-                              {i + 1}
-                            </div>
+                          <li key={i} className="flex items-start gap-4 text-xs text-slate-600 font-bold leading-tight">
+                            <Check size={16} className="text-black shrink-0 mt-0.5" />
                             {b}
                           </li>
                         ))}
                       </ul>
                     </div>
 
+                    <div className="mb-10">
+                      <h4 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">¿Cómo consumirlo?</h4>
+                      <div className="flex items-start gap-5 p-6 rounded-[2rem] border border-black/5 bg-white shadow-sm">
+                        <div className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-black text-white text-xs font-black shadow-lg shadow-black/20">
+                          <Zap size={16} />
+                        </div>
+                        <p className="text-xs text-slate-500 leading-relaxed font-medium italic">"{selectedProduct.usage || 'Consultar empaque para instrucciones detalladas.'}"</p>
+                      </div>
+                    </div>
+
                     {/* Trust Badges Grid */}
-                    <div className="grid grid-cols-3 gap-2 md:gap-3">
-                      <div className="flex flex-col items-center justify-center rounded-xl md:rounded-2xl bg-slate-50 p-2 md:p-4 text-center border border-slate-100 group hover:border-black transition-colors">
-                        <div className="mb-1 md:mb-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#742284] text-white shadow-lg">
-                          <span className="text-sm md:text-lg font-black tracking-tighter">Y</span>
+                    <div className="grid grid-cols-3 gap-3 mb-10">
+                      <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-4 text-center border border-slate-100">
+                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#742284] text-white shadow-lg">
+                          <span className="text-lg font-black tracking-tighter">Y</span>
                         </div>
-                        <p className="text-[6px] md:text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pagos seguros con Yape Perú</p>
+                        <p className="text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pagos con Yape</p>
                       </div>
-                      <div className="flex flex-col items-center justify-center rounded-xl md:rounded-2xl bg-slate-50 p-2 md:p-4 text-center border border-slate-100 group hover:border-black transition-colors">
-                        <div className="mb-1 md:mb-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-[#1A1F71] text-white shadow-lg">
-                          <span className="text-[8px] md:text-[10px] font-black italic tracking-tighter text-[#F7B600]">VISA</span>
+                      <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-4 text-center border border-slate-100">
+                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-[#1A1F71] text-white shadow-lg">
+                          <span className="text-[10px] font-black italic tracking-tighter text-[#F7B600]">VISA</span>
                         </div>
-                        <p className="text-[6px] md:text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pago Seguro Múltiples</p>
+                        <p className="text-[7px] font-black uppercase tracking-widest text-black leading-tight">Pago Seguro</p>
                       </div>
-                      <div className="flex flex-col items-center justify-center rounded-xl md:rounded-2xl bg-slate-50 p-2 md:p-4 text-center border border-slate-100 group hover:border-black transition-colors">
-                        <div className="mb-1 md:mb-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-black text-white shadow-lg">
-                          <ShieldCheck size={16} className="md:w-5 md:h-5" />
+                      <div className="flex flex-col items-center justify-center rounded-2xl bg-slate-50 p-4 text-center border border-slate-100">
+                        <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-black text-white shadow-lg">
+                          <ShieldCheck size={20} />
                         </div>
-                        <p className="text-[6px] md:text-[7px] font-black uppercase tracking-widest text-black leading-tight">Garantía 30 días</p>
+                        <p className="text-[7px] font-black uppercase tracking-widest text-black leading-tight">Garantía</p>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="mt-auto flex flex-col gap-6 md:gap-8">
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                      <div className="flex items-center justify-between sm:justify-start gap-6 rounded-2xl border border-slate-100 px-6 py-4">
-                        <button 
-                          onClick={() => setModalQuantity(Math.max(1, modalQuantity - 1))}
-                          className="text-slate-400 hover:text-black transition-colors"
-                        >
-                          <Minus size={20} />
-                        </button>
-                        <span className="text-lg font-black w-8 text-center">{modalQuantity}</span>
-                        <button 
-                          onClick={() => setModalQuantity(modalQuantity + 1)}
-                          className="text-slate-400 hover:text-black transition-colors"
-                        >
-                          <Plus size={20} />
-                        </button>
+                {/* Footer: Nutritional Info & Actions */}
+                <div className="p-6 md:p-12 bg-slate-50 border-t border-slate-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end">
+                    <div>
+                      <h4 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-black">Contenido y Detalles</h4>
+                      <div className="space-y-3 text-xs text-slate-500 bg-white p-6 rounded-[2rem] border border-slate-100">
+                        {selectedProduct.nutritional_info?.servingSize && (
+                          <div className="flex justify-between border-b border-slate-50 pb-2">
+                            <span className="font-medium">Contenido / Tamaño</span>
+                            <span className="font-black text-black">{selectedProduct.nutritional_info.servingSize}</span>
+                          </div>
+                        )}
+                        {selectedProduct.nutritional_info?.servingsPerContainer && (
+                          <div className="flex justify-between border-b border-slate-50 pb-2">
+                            <span className="font-medium">Porciones</span>
+                            <span className="font-black text-black">{selectedProduct.nutritional_info.servingsPerContainer}</span>
+                          </div>
+                        )}
+                        {selectedProduct.nutritional_info?.energy && (
+                          <div className="flex justify-between border-b border-slate-50 pb-2">
+                            <span className="font-medium">Energía / Calorías</span>
+                            <span className="font-black text-black">{selectedProduct.nutritional_info.energy}</span>
+                          </div>
+                        )}
+                        {!selectedProduct.nutritional_info?.servingSize && !selectedProduct.nutritional_info?.servingsPerContainer && !selectedProduct.nutritional_info?.energy && (
+                          <p className="text-[10px] italic">Información disponible en el empaque físico.</p>
+                        )}
                       </div>
-                      
-                      <button 
-                        onClick={() => {
-                          addToCart(selectedProduct, modalQuantity);
-                          setSelectedProduct(null);
-                          setModalQuantity(1);
-                          setIsCartOpen(true);
-                        }}
-                        className="flex flex-1 items-center justify-center gap-3 rounded-2xl bg-black py-5 text-[11px] font-black text-white transition-all hover:bg-slate-800 uppercase tracking-widest shadow-xl shadow-black/20"
-                      >
-                        <ShoppingCart size={18} />
-                        COMPRAR DIRECTAMENTE
-                      </button>
+                    </div>
 
-                      <div className="flex gap-4">
+                    <div className="flex flex-col gap-6">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                        <div className="flex items-center justify-between sm:justify-start gap-8 rounded-2xl border border-slate-200 bg-white px-8 py-4">
+                          <button 
+                            onClick={() => setModalQuantity(Math.max(1, modalQuantity - 1))}
+                            className="text-slate-400 hover:text-black transition-colors"
+                          >
+                            <Minus size={20} />
+                          </button>
+                          <span className="text-xl font-black w-8 text-center">{modalQuantity}</span>
+                          <button 
+                            onClick={() => setModalQuantity(modalQuantity + 1)}
+                            className="text-slate-400 hover:text-black transition-colors"
+                          >
+                            <Plus size={20} />
+                          </button>
+                        </div>
+                        
                         <button 
-                          onClick={() => toggleWishlist(selectedProduct.id)}
-                          className={`flex-1 sm:flex-none rounded-2xl border p-5 transition-all flex items-center justify-center ${
-                            wishlist.includes(selectedProduct.id) 
-                              ? 'border-red-100 text-red-500 bg-red-50' 
-                              : 'border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-100'
-                          }`}
+                          onClick={() => {
+                            addToCart(selectedProduct, modalQuantity);
+                            setSelectedProduct(null);
+                            setModalQuantity(1);
+                            setIsCartOpen(true);
+                          }}
+                          className="flex flex-1 items-center justify-center gap-3 rounded-2xl bg-black py-5 text-xs font-black text-white transition-all hover:bg-slate-800 uppercase tracking-widest shadow-xl shadow-black/20"
                         >
-                          <Heart size={24} fill={wishlist.includes(selectedProduct.id) ? "currentColor" : "none"} />
+                          <ShoppingCart size={20} />
+                          Añadir al Carrito
                         </button>
 
-                        <button className="flex-1 sm:flex-none rounded-2xl border border-slate-100 p-5 text-slate-300 hover:text-black transition-all flex items-center justify-center">
-                          <Share2 size={24} />
-                        </button>
+                        <div className="flex gap-4">
+                          <button 
+                            onClick={() => toggleWishlist(selectedProduct.id)}
+                            className={`flex-1 sm:flex-none rounded-2xl border p-5 transition-all flex items-center justify-center ${
+                              wishlist.includes(selectedProduct.id) 
+                                ? 'border-red-100 text-red-500 bg-red-50' 
+                                : 'border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-100'
+                            }`}
+                          >
+                            <Heart size={24} fill={wishlist.includes(selectedProduct.id) ? "currentColor" : "none"} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1623,31 +1629,36 @@ function StoreFront() {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl overflow-hidden rounded-3xl md:rounded-[2.5rem] bg-white p-6 md:p-8 shadow-2xl"
+              className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] bg-white p-6 md:p-10 shadow-2xl"
             >
               <button 
                 onClick={() => setIsPopupOpen(false)}
-                className="absolute right-4 top-4 md:right-6 md:top-6 z-10 rounded-full bg-slate-100 p-2 text-slate-500 hover:text-black transition-colors"
+                className="absolute right-6 top-6 z-10 rounded-full bg-slate-100 p-2.5 text-slate-500 hover:text-black transition-all hover:rotate-90"
               >
                 <X size={20} />
               </button>
-              <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-6 md:mb-8 text-center">Ofertas Especiales</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-h-[60vh] overflow-y-auto no-scrollbar">
+              <div className="text-center mb-8">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Exclusivo para ti</span>
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mt-2">Ofertas de Hoy</h2>
+              </div>
+              <div className="space-y-4 max-h-[65vh] overflow-y-auto no-scrollbar pr-1">
                 {popupOffers.map(offer => (
-                  <div key={offer.id} className="rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 p-4 flex flex-col">
-                    <div className="aspect-video w-full overflow-hidden rounded-xl mb-4">
-                      <img src={offer.image_url} alt={offer.title} className="w-full h-full object-cover" />
+                  <div key={offer.id} className="group relative rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 p-4 transition-all hover:border-black">
+                    <div className="aspect-[16/9] w-full overflow-hidden rounded-2xl mb-4">
+                      <img src={offer.image_url} alt={offer.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    <h3 className="text-xs md:text-sm font-black uppercase tracking-tight mb-4 flex-1">{offer.title}</h3>
-                    <button 
-                      onClick={() => {
-                        setIsPopupOpen(false);
-                        document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="w-full rounded-full bg-black py-3 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all"
-                    >
-                      VER PRODUCTO
-                    </button>
+                    <div className="flex flex-col gap-4">
+                      <h3 className="text-sm font-black uppercase tracking-tight leading-tight">{offer.title}</h3>
+                      <button 
+                        onClick={() => {
+                          setIsPopupOpen(false);
+                          document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="w-full rounded-full bg-black py-4 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all shadow-lg shadow-black/10"
+                      >
+                        Aprovechar Oferta
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
