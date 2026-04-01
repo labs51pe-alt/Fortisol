@@ -108,35 +108,8 @@ function StoreFront() {
     fetchDynamicData();
   }, []);
 
-  const introSlides = [
-    {
-      title: "OMEGA-3",
-      subtitle: "GRASAS ESENCIALES",
-      description: "Ayuda a reducir la inflamación, bajar los triglicéridos y fortalecer las membranas celulares.",
-      image: "https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&q=80&w=1920",
-      badge: "PROMOCIÓN ESPECIAL",
-      price: "192.00",
-      color: "#000000"
-    },
-    {
-      title: "PROBIÓTICOS",
-      subtitle: "SALUD INTESTINAL",
-      description: "Fórmula avanzada con 50 billones de cultivos vivos para una digestión perfecta.",
-      image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&q=80&w=1920",
-      badge: "MÁS VENDIDO",
-      price: "85.00",
-      color: "#000000"
-    },
-    {
-      title: "COLÁGENO",
-      subtitle: "PIEL Y ARTICULACIONES",
-      description: "Colágeno hidrolizado premium con Vitamina C y Ácido Hialurónico.",
-      image: "https://images.unsplash.com/photo-1550573105-1246c22d48b2?auto=format&fit=crop&q=80&w=1920",
-      badge: "NUEVA FÓRMULA",
-      price: "120.00",
-      color: "#000000"
-    }
-  ];
+  // Fallback slides removed as requested by user to avoid showing demo data
+  const introSlides: any[] = [];
 
   async function fetchDynamicData() {
     setIsLoadingData(true);
@@ -146,10 +119,10 @@ function StoreFront() {
     const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
     
     if (pData && pData.length > 0) setDynamicProducts(pData);
-    else setDynamicProducts(PRODUCTS); // Fallback to static
+    else setDynamicProducts([]); // No fallback to demo data
 
     if (sData && sData.length > 0) setDynamicSlides(sData);
-    else setDynamicSlides(introSlides); // Fallback to static
+    else setDynamicSlides([]); // No fallback to demo data
 
     if (oData && oData.length > 0) {
       setPopupOffers(oData);
@@ -161,7 +134,7 @@ function StoreFront() {
     setIsLoadingData(false);
   }
 
-  const activeProducts = dynamicProducts.length > 0 ? dynamicProducts : PRODUCTS;
+  const activeProducts = dynamicProducts;
   const activeSlides = dynamicSlides.length > 0 ? dynamicSlides : introSlides;
   
   const categories = ['Todos', 'Bienestar', 'Energía', 'Digestión', 'Piel', 'Combos'];
@@ -179,19 +152,22 @@ function StoreFront() {
   }, []);
 
   useEffect(() => {
-    // Show promo popup after 4 seconds
+    // Automatic promo popup disabled as it contained demo data
+    /*
     const timer = setTimeout(() => {
       setIsPromoOpen(true);
     }, 4000);
     return () => clearTimeout(timer);
+    */
   }, []);
 
   useEffect(() => {
+    if (activeSlides.length <= 1) return;
     const timer = setInterval(() => {
-      setCurrentIntroSlide(prev => (prev + 1) % introSlides.length);
+      setCurrentIntroSlide(prev => (prev + 1) % activeSlides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [activeSlides.length]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -312,30 +288,25 @@ function StoreFront() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-black selection:text-white">
-      {/* Announcement Bar */}
-      <div className="bg-black py-2 text-center text-[10px] font-black uppercase tracking-[0.25em] text-white">
-        Envío gratis en pedidos mayores a S/ 200 • Asesoría gratuita vía WhatsApp
-      </div>
-
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-white/95 py-3 shadow-sm backdrop-blur-md border-b border-slate-100' : 'bg-transparent py-6'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-white/95 py-2 shadow-sm backdrop-blur-md border-b border-slate-100' : 'bg-transparent py-4'}`}>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <div className="flex flex-col leading-none">
-              <span className={`text-2xl font-black tracking-tighter flex items-center gap-1 transition-colors duration-500 ${scrolled ? 'text-black' : 'text-white'}`}>
-                FORTISOL<span className="text-[10px] align-top">®</span>
+              <span className={`text-xl font-black tracking-tighter flex items-center gap-1 transition-colors duration-500 ${scrolled ? 'text-black' : 'text-white'}`}>
+                FORTISOL<span className="text-[9px] align-top">®</span>
               </span>
-              <span className={`text-[8px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${scrolled ? 'text-slate-400' : 'text-white/60'}`}>
+              <span className={`text-[7px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${scrolled ? 'text-slate-400' : 'text-white/60'}`}>
                 Salud para toda la vida
               </span>
             </div>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden items-center gap-10 md:flex">
-            <a href="#inicio" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Inicio</a>
-            <a href="#productos" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Catálogo</a>
-            <a href="#testimonios" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Testimonios</a>
+          <div className="hidden items-center gap-8 md:flex">
+            <a href="#inicio" className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Inicio</a>
+            <a href="#productos" className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Catálogo</a>
+            <a href="#testimonios" className={`text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Testimonios</a>
           </div>
 
           <div className="flex items-center gap-4">
@@ -343,16 +314,16 @@ function StoreFront() {
               onClick={() => setIsCartOpen(true)}
               className={`relative p-2 transition-all hover:scale-110 ${scrolled ? 'text-black' : 'text-white'}`}
             >
-              <ShoppingCart size={20} />
+              <ShoppingCart size={18} />
               {cart.length > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[8px] font-bold text-white">
+                <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-black text-[7px] font-bold text-white">
                   {cart.length}
                 </span>
               )}
             </button>
             <button 
               onClick={() => handleWhatsAppOrder()}
-              className={`hidden items-center gap-2 rounded-full px-6 py-2.5 text-[10px] font-black transition-all uppercase tracking-widest md:flex ${scrolled ? 'bg-black text-white hover:bg-slate-800' : 'bg-white text-black hover:bg-slate-100'}`}
+              className={`hidden items-center gap-2 rounded-full px-5 py-2 text-[9px] font-black transition-all uppercase tracking-widest md:flex ${scrolled ? 'bg-black text-white hover:bg-slate-800' : 'bg-white text-black hover:bg-slate-100'}`}
             >
               CONTACTAR
             </button>
@@ -413,7 +384,7 @@ function StoreFront() {
       </AnimatePresence>
 
       {/* Hero Slider (Organa Style) */}
-      <section id="inicio" className="relative h-[80vh] min-h-[600px] w-full overflow-hidden bg-black pt-20">
+      <section id="inicio" className="relative h-[70vh] min-h-[500px] w-full overflow-hidden bg-black pt-16">
         {/* Background Slider */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -427,76 +398,91 @@ function StoreFront() {
             <img 
               src={activeSlides[currentIntroSlide]?.image_url || activeSlides[currentIntroSlide]?.image} 
               alt="Background" 
-              className="h-full w-full object-cover opacity-80"
+              className="h-full w-full object-cover opacity-100"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/30" />
+            <div className="absolute inset-0 bg-black/20" />
           </motion.div>
         </AnimatePresence>
 
         <div className="container relative z-10 mx-auto max-w-7xl px-6 h-full flex flex-col items-center justify-center">
-          <div className="flex flex-col items-center justify-center text-center w-full">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentIntroSlide}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="flex flex-col items-center"
-              >
-                {/* Badge */}
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white border border-white/20"
+          {activeSlides.length > 0 ? (
+            <div className="flex flex-col items-center justify-center text-center w-full">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIntroSlide}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className="flex flex-col items-center"
                 >
-                  <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                  {activeSlides[currentIntroSlide]?.badge || 'FORTISOL PERÚ'}
-                </motion.div>
+                  {/* Badge */}
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/20 backdrop-blur-md px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white border border-white/30 shadow-lg"
+                  >
+                    <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                    {activeSlides[currentIntroSlide]?.badge || 'FORTISOL PERÚ'}
+                  </motion.div>
 
-                {/* Title & Subtitle */}
-                <div className="mb-4 flex flex-col items-center">
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 mb-2">
-                    {activeSlides[currentIntroSlide]?.subtitle}
-                  </h2>
-                  <h1 className="text-4xl font-black tracking-tight text-white md:text-7xl lg:text-9xl drop-shadow-2xl max-w-5xl leading-[0.85] uppercase">
-                    {activeSlides[currentIntroSlide]?.title}
-                  </h1>
+                  {/* Title & Subtitle */}
+                  <div className="mb-4 flex flex-col items-center">
+                    <h2 className="text-xs font-black uppercase tracking-[0.4em] text-white mb-2 drop-shadow-lg">
+                      {activeSlides[currentIntroSlide]?.subtitle}
+                    </h2>
+                    <h1 className="text-4xl font-black tracking-tighter text-white md:text-7xl lg:text-[8rem] drop-shadow-[0_15px_40px_rgba(0,0,0,0.7)] max-w-6xl leading-[0.8] uppercase">
+                      {activeSlides[currentIntroSlide]?.title}
+                    </h1>
+                  </div>
+
+                  {/* Description */}
+                  <p className="mb-8 max-w-2xl text-sm font-bold text-white md:text-lg leading-relaxed drop-shadow-[0_4px_15px_rgba(0,0,0,0.9)]">
+                    {activeSlides[currentIntroSlide]?.description}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Controls & CTAs */}
+              <div className="flex flex-col items-center gap-6 w-full">
+                {/* Buttons */}
+                <div className="flex flex-col gap-4 sm:flex-row">
+                  <button 
+                    onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="flex items-center justify-center gap-3 rounded-full bg-white px-8 py-3 text-[10px] font-black text-black shadow-2xl transition-all hover:bg-slate-100 hover:scale-105 active:scale-95 uppercase tracking-widest group"
+                  >
+                    ENTRAR A LA WEB
+                    <ChevronRight size={14} />
+                  </button>
                 </div>
 
-                {/* Description */}
-                <p className="mb-8 max-w-xl text-sm font-medium text-white/70 md:text-lg leading-relaxed drop-shadow-md">
-                  {activeSlides[currentIntroSlide]?.description}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Controls & CTAs */}
-            <div className="flex flex-col items-center gap-6 w-full">
-              {/* Buttons */}
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <button 
-                  onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="flex items-center justify-center gap-3 rounded-full bg-white px-10 py-4 text-xs font-black text-black shadow-2xl transition-all hover:bg-slate-100 hover:scale-105 active:scale-95 uppercase tracking-widest group"
-                >
-                  ENTRAR A LA WEB
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-
-              {/* Progress Dots */}
-              <div className="flex gap-2">
-                {activeSlides.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentIntroSlide(i)}
-                    className={`h-1 rounded-full transition-all duration-500 ${currentIntroSlide === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`}
-                  />
-                ))}
+                {/* Progress Dots */}
+                <div className="flex gap-2">
+                  {activeSlides.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentIntroSlide(i)}
+                      className={`h-1 rounded-full transition-all duration-500 ${currentIntroSlide === i ? 'w-8 bg-white' : 'w-2 bg-white/20'}`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center text-center w-full">
+              <h1 className="text-4xl font-black tracking-tight text-white md:text-7xl uppercase">
+                FORTISOL PERÚ
+              </h1>
+              <p className="mt-4 text-white/70 text-lg uppercase tracking-widest">Salud para toda la vida</p>
+              <button 
+                onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
+                className="mt-8 flex items-center justify-center gap-3 rounded-full bg-white px-10 py-4 text-xs font-black text-black shadow-2xl transition-all hover:bg-slate-100 uppercase tracking-widest"
+              >
+                VER PRODUCTOS
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Bottom Feature Cards */}
@@ -513,11 +499,11 @@ function StoreFront() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 + (i * 0.1) }}
-                className="flex flex-col items-center rounded-2xl bg-white/5 backdrop-blur-lg p-5 border border-white/10"
+                className="flex flex-col items-center rounded-2xl bg-white/5 backdrop-blur-lg p-4 border border-white/10"
               >
                 <div className="mb-2 text-white">{item.icon}</div>
-                <p className="text-[9px] font-black uppercase tracking-widest text-white">{item.label}</p>
-                <p className="text-[7px] font-bold text-white/40 uppercase tracking-widest">{item.sub}</p>
+                <p className="text-[8px] font-black uppercase tracking-widest text-white">{item.label}</p>
+                <p className="text-[6px] font-bold text-white/40 uppercase tracking-widest">{item.sub}</p>
               </motion.div>
             ))}
           </div>
@@ -526,17 +512,17 @@ function StoreFront() {
 
       {/* Promos Bar (Organa Style) */}
       {settings?.promo_enabled && (
-        <div className="bg-black py-6 overflow-hidden border-y border-white/10">
+        <div className="bg-black py-4 overflow-hidden border-y border-white/10">
           <div className="container mx-auto max-w-7xl px-6">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-3 text-white">
-                  <span className="text-3xl animate-pulse">⚡</span>
-                  <h3 className="text-3xl font-black uppercase tracking-tighter">{settings?.promo_title || 'PROMOS AQUI'}</h3>
-                  <span className="text-3xl">🖤</span>
+                  <span className="text-2xl animate-pulse">⚡</span>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter">{settings?.promo_title || 'OFERTAS ESPECIALES'}</h3>
+                  <span className="text-2xl">🖤</span>
                 </div>
-                <div className="hidden lg:block h-10 w-px bg-white/20 mx-2" />
-                <p className="text-xs font-black text-white/80 uppercase tracking-[0.2em] hidden lg:block">
+                <div className="hidden lg:block h-8 w-px bg-white/20 mx-2" />
+                <p className="text-[10px] font-black text-white/80 uppercase tracking-[0.2em] hidden lg:block">
                   ¡OFERTAS EXCLUSIVAS POR TIEMPO LIMITADO!
                 </p>
               </div>
@@ -550,16 +536,16 @@ function StoreFront() {
                     { label: 'Segundos', value: timeLeft.seconds }
                   ].map((unit, i) => (
                     <div key={i} className="flex flex-col items-center">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-2xl font-black text-white shadow-inner">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-xl font-black text-white shadow-inner">
                         {unit.value.toString().padStart(2, '0')}
                       </div>
-                      <span className="mt-2 text-[9px] font-black uppercase tracking-widest text-white/50">{unit.label}</span>
+                      <span className="mt-2 text-[8px] font-black uppercase tracking-widest text-white/50">{unit.label}</span>
                     </div>
                   ))}
                 </div>
                 <button 
                   onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="rounded-full bg-white px-8 py-4 text-[11px] font-black text-black uppercase tracking-widest hover:bg-slate-100 transition-all hover:scale-105 active:scale-95 shadow-xl"
+                  className="rounded-full bg-white px-6 py-3 text-[10px] font-black text-black uppercase tracking-widest hover:bg-slate-100 transition-all hover:scale-105 active:scale-95 shadow-xl"
                 >
                   VER MÁS
                 </button>
@@ -570,13 +556,13 @@ function StoreFront() {
       )}
 
       {/* Features */}
-      <section className="bg-white py-24 border-y border-slate-100">
+      <section className="bg-white py-16 border-y border-slate-100">
         <div className="container mx-auto max-w-7xl px-6">
           <div className="grid gap-12 md:grid-cols-3">
             {[
-              { icon: <Truck className="text-black" size={28} />, title: "Envíos a Todo el Perú", desc: "Llegamos a cada rincón del país con rapidez y seguridad." },
-              { icon: <ShieldCheck className="text-black" size={28} />, title: "Calidad Garantizada", desc: "Productos con registros sanitarios y fórmulas naturales." },
-              { icon: <CheckCircle2 className="text-black" size={28} />, title: "Pago Contra Entrega", desc: "Paga al recibir tu pedido en las principales ciudades." }
+              { icon: <Truck className="text-black" size={24} />, title: "Envíos a Todo el Perú", desc: "Llegamos a cada rincón del país con rapidez y seguridad." },
+              { icon: <ShieldCheck className="text-black" size={24} />, title: "Calidad Garantizada", desc: "Productos con registros sanitarios y fórmulas naturales." },
+              { icon: <CheckCircle2 className="text-black" size={24} />, title: "Pago Contra Entrega", desc: "Paga al recibir tu pedido en las principales ciudades." }
             ].map((feature, i) => (
               <motion.div 
                 key={i}
@@ -586,9 +572,9 @@ function StoreFront() {
                 transition={{ delay: i * 0.2 }}
                 className="flex flex-col items-center text-center group"
               >
-                <div className="mb-6 rounded-full bg-slate-50 p-6 transition-all group-hover:bg-black group-hover:text-white">{feature.icon}</div>
-                <h3 className="mb-3 text-lg font-black uppercase tracking-wider">{feature.title}</h3>
-                <p className="text-sm leading-relaxed text-slate-500 font-medium">{feature.desc}</p>
+                <div className="mb-5 rounded-full bg-slate-50 p-5 transition-all group-hover:bg-black group-hover:text-white">{feature.icon}</div>
+                <h3 className="mb-2 text-base font-black uppercase tracking-wider">{feature.title}</h3>
+                <p className="text-xs leading-relaxed text-slate-500 font-medium">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -596,24 +582,24 @@ function StoreFront() {
       </section>
 
       {/* Catalog Section */}
-      <section id="productos" className="bg-white py-32">
+      <section id="productos" className="bg-white py-20">
         <div className="container mx-auto max-w-7xl px-6">
-          <div className="mb-24 text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-slate-50 px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+          <div className="mb-16 text-center">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-slate-50 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
               NUESTRA COLECCIÓN
             </div>
-            <h2 className="mb-8 text-5xl font-black text-black md:text-7xl uppercase tracking-tighter">Catálogo de Productos</h2>
-            <p className="mx-auto max-w-2xl text-lg text-slate-500 font-medium leading-relaxed">
+            <h2 className="mb-6 text-4xl font-black text-black md:text-6xl uppercase tracking-tighter">Catálogo de Productos</h2>
+            <p className="mx-auto max-w-2xl text-base text-slate-500 font-medium leading-relaxed">
               Descubre nuestra selección premium de productos naturales. Calidad garantizada para tu bienestar diario.
             </p>
             
             {/* Category Filter */}
-            <div className="mt-16 flex flex-wrap justify-center gap-3">
+            <div className="mt-12 flex flex-wrap justify-center gap-2">
               {categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-full px-8 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${selectedCategory === cat ? 'bg-black text-white border-black shadow-xl shadow-black/10' : 'bg-white text-slate-400 border-slate-100 hover:border-black hover:text-black'}`}
+                  className={`rounded-full px-6 py-2 text-[9px] font-black uppercase tracking-[0.2em] transition-all border ${selectedCategory === cat ? 'bg-black text-white border-black shadow-xl shadow-black/10' : 'bg-white text-slate-400 border-slate-100 hover:border-black hover:text-black'}`}
                 >
                   {cat}
                 </button>
@@ -639,12 +625,12 @@ function StoreFront() {
                     className={`group relative flex flex-col bg-white border ${product.category === 'Combos' ? 'border-amber-400 border-2' : 'border-slate-50'} transition-all hover:border-slate-200`}
                   >
                     {product.category === 'Combos' && (
-                      <div className="absolute left-4 top-4 z-10 rounded-full bg-amber-500 px-4 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-white">
+                      <div className="absolute left-4 top-4 z-10 rounded-full bg-amber-500 px-3 py-1 text-[7px] font-black uppercase tracking-[0.2em] text-white">
                         COMBO
                       </div>
                     )}
                     {product.tag && product.category !== 'Combos' && (
-                      <div className="absolute left-4 top-4 z-10 rounded-full bg-black px-4 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-white">
+                      <div className="absolute left-4 top-4 z-10 rounded-full bg-black px-3 py-1 text-[7px] font-black uppercase tracking-[0.2em] text-white">
                         {product.tag}
                       </div>
                     )}
@@ -660,7 +646,7 @@ function StoreFront() {
                       <div className="flex flex-col gap-2">
                         <button 
                           onClick={() => setSelectedProduct(product)}
-                          className="w-full bg-white/95 backdrop-blur-md py-3 text-[9px] font-black uppercase tracking-widest text-black shadow-xl hover:bg-black hover:text-white transition-all"
+                          className="w-full bg-white/95 backdrop-blur-md py-2 text-[8px] font-black uppercase tracking-widest text-black shadow-xl hover:bg-black hover:text-white transition-all"
                         >
                           VER MÁS
                         </button>
@@ -669,7 +655,7 @@ function StoreFront() {
                             e.stopPropagation();
                             addToCart(product);
                           }}
-                          className="w-full bg-black py-3 text-[9px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-slate-800 transition-all"
+                          className="w-full bg-black py-2 text-[8px] font-black uppercase tracking-widest text-white shadow-xl hover:bg-slate-800 transition-all"
                         >
                           COMPRAR
                         </button>
@@ -691,9 +677,9 @@ function StoreFront() {
                       <Heart size={16} fill={wishlist.includes(product.id) ? "currentColor" : "none"} />
                     </button>
                   </div>
-                  <div className="flex flex-col p-6 text-center">
-                    <span className="mb-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">{product.category}</span>
-                    <h3 className="mb-3 text-lg font-black text-black tracking-tight group-hover:text-slate-600 transition-colors">{product.name}</h3>
+                  <div className="flex flex-col p-4 text-center">
+                    <span className="mb-2 text-[8px] font-black uppercase tracking-[0.2em] text-slate-400">{product.category}</span>
+                    <h3 className="mb-2 text-base font-black text-black tracking-tight group-hover:text-slate-600 transition-colors">{product.name}</h3>
                     
                     <div className="flex items-center justify-center gap-2 mb-4">
                       <div className="flex text-black">
@@ -712,18 +698,18 @@ function StoreFront() {
       </section>
 
       {/* Testimonials (TikTok Style) */}
-      <section id="testimonios" className="bg-white py-32 overflow-hidden">
+      <section id="testimonios" className="bg-white py-20 overflow-hidden">
         <div className="container mx-auto max-w-7xl px-6">
-          <div className="mb-16 flex flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="mb-12 flex flex-col items-center justify-between gap-8 md:flex-row">
             <div className="text-center md:text-left">
-              <h2 className="mb-3 text-4xl font-black text-black uppercase tracking-tighter">Testimonios Reales</h2>
-              <p className="text-lg text-slate-500 font-medium">Mira cómo Fortisol está cambiando vidas en todo el Perú.</p>
+              <h2 className="mb-2 text-3xl font-black text-black uppercase tracking-tighter">Testimonios Reales</h2>
+              <p className="text-base text-slate-500 font-medium">Mira cómo Fortisol está cambiando vidas en todo el Perú.</p>
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-5">
+            <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
               <div className="flex text-black">
-                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={18} fill="currentColor" />)}
+                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={16} fill="currentColor" />)}
               </div>
-              <span className="text-sm font-black text-black uppercase tracking-widest">4.9/5 Calificación</span>
+              <span className="text-xs font-black text-black uppercase tracking-widest">4.9/5 Calificación</span>
             </div>
           </div>
 
@@ -737,7 +723,7 @@ function StoreFront() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                   onClick={() => setActiveStory(t)}
-                  className="relative h-[500px] min-w-[300px] cursor-pointer overflow-hidden rounded-[2.5rem] bg-slate-100 shadow-2xl transition-all hover:scale-[1.02] snap-start group border border-slate-100"
+                  className="relative h-[400px] min-w-[250px] cursor-pointer overflow-hidden rounded-[2rem] bg-slate-100 shadow-2xl transition-all hover:scale-[1.02] snap-start group border border-slate-100"
                 >
                   <img 
                     src={t.thumbnail} 
@@ -760,13 +746,13 @@ function StoreFront() {
 
                   <div className="absolute bottom-8 left-8 right-8 text-white">
                     <div className="mb-4 flex items-center gap-4">
-                      <img src={t.avatar} alt={t.name} className="h-12 w-12 rounded-full border-2 border-white shadow-lg" referrerPolicy="no-referrer" />
+                      <img src={t.avatar} alt={t.name} className="h-10 w-10 rounded-full border-2 border-white shadow-lg" referrerPolicy="no-referrer" />
                       <div>
-                        <h4 className="text-lg font-black leading-none tracking-tight">{t.name}</h4>
-                        <p className="text-[10px] font-black text-white/70 uppercase tracking-[0.2em] mt-1">{t.location}</p>
+                        <h4 className="text-base font-black leading-none tracking-tight">{t.name}</h4>
+                        <p className="text-[8px] font-black text-white/70 uppercase tracking-[0.2em] mt-1">{t.location}</p>
                       </div>
                     </div>
-                    <p className="line-clamp-2 text-sm font-medium leading-relaxed text-white/90 italic">"{t.text}"</p>
+                    <p className="line-clamp-2 text-xs font-medium leading-relaxed text-white/90 italic">"{t.text}"</p>
                   </div>
                 </motion.div>
               ))}
@@ -923,71 +909,71 @@ function StoreFront() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 bg-white">
+      <section className="py-20 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-[4rem] bg-black px-8 py-24 text-center text-white md:px-16"
+            className="relative overflow-hidden rounded-[3rem] bg-black px-8 py-16 text-center text-white md:px-16"
           >
             <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
             <div className="absolute -bottom-20 -left-20 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
             
-            <h2 className="relative z-10 mb-8 text-4xl font-black md:text-7xl uppercase tracking-tighter">¿Listo para sentirte mejor?</h2>
-            <p className="relative z-10 mb-12 mx-auto max-w-2xl text-xl text-slate-400 font-medium leading-relaxed">
+            <h2 className="relative z-10 mb-6 text-3xl font-black md:text-6xl uppercase tracking-tighter">¿Listo para sentirte mejor?</h2>
+            <p className="relative z-10 mb-10 mx-auto max-w-2xl text-lg text-slate-400 font-medium leading-relaxed">
               No dejes que el dolor te detenga. Empieza hoy tu tratamiento con Fortisol y recupera tu vitalidad.
             </p>
             <button 
               onClick={() => handleWhatsAppOrder()}
-              className="relative z-10 flex items-center justify-center gap-4 rounded-full bg-white px-12 py-6 text-xl font-black text-black shadow-2xl transition-all hover:scale-105 active:scale-95 mx-auto uppercase tracking-widest"
+              className="relative z-10 flex items-center justify-center gap-4 rounded-full bg-white px-10 py-4 text-lg font-black text-black shadow-2xl transition-all hover:scale-105 active:scale-95 mx-auto uppercase tracking-widest"
             >
-              <MessageCircle size={32} />
+              <MessageCircle size={28} />
               PEDIR POR WHATSAPP AHORA
             </button>
-            <p className="mt-8 text-xs font-black uppercase tracking-[0.3em] text-slate-500">Atención inmediata a nivel nacional en Perú</p>
+            <p className="mt-8 text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Atención inmediata a nivel nacional en Perú</p>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-white py-32 border-t border-slate-50">
+      <footer className="bg-white py-20 border-t border-slate-50">
         <div className="container mx-auto max-w-7xl px-6">
-          <div className="grid gap-20 md:grid-cols-4">
+          <div className="grid gap-12 md:grid-cols-4">
             <div className="md:col-span-2">
-              <div className="mb-10 flex flex-col">
-                <span className="text-3xl font-black tracking-tighter text-black flex items-center gap-1">
-                  FORTISOL<span className="text-[10px] align-top">®</span>
+              <div className="mb-6 flex flex-col">
+                <span className="text-2xl font-black tracking-tighter text-black flex items-center gap-1">
+                  FORTISOL<span className="text-[9px] align-top">®</span>
                 </span>
-                <span className="text-[9px] font-black tracking-[0.3em] text-slate-400 uppercase mt-1">
+                <span className="text-[8px] font-black tracking-[0.3em] text-slate-400 uppercase mt-1">
                   Salud para toda la vida
                 </span>
               </div>
-              <p className="mb-10 max-w-sm text-lg text-slate-500 font-medium leading-relaxed">
+              <p className="mb-6 max-w-sm text-base text-slate-500 font-medium leading-relaxed">
                 Líderes en fórmulas nutracéuticas y aceites esenciales en Perú. Comprometidos con tu salud y bienestar natural desde hace más de 10 años.
               </p>
               <div className="flex gap-4">
                 {(!settings || settings.show_instagram) && (
-                  <a href={settings?.instagram || SOCIAL_INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-100 text-black transition-all hover:bg-black hover:text-white hover:scale-110">
-                    <Instagram size={20} />
+                  <a href={settings?.instagram || SOCIAL_INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 text-black transition-all hover:bg-black hover:text-white hover:scale-110">
+                    <Instagram size={18} />
                   </a>
                 )}
                 {(!settings || settings.show_facebook) && (
-                  <a href={settings?.facebook || SOCIAL_FACEBOOK} target="_blank" rel="noopener noreferrer" className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-100 text-black transition-all hover:bg-black hover:text-white hover:scale-110">
-                    <Facebook size={20} />
+                  <a href={settings?.facebook || SOCIAL_FACEBOOK} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 text-black transition-all hover:bg-black hover:text-white hover:scale-110">
+                    <Facebook size={18} />
                   </a>
                 )}
                 {(!settings || settings.show_tiktok) && (
-                  <a href={settings?.tiktok || SOCIAL_TIKTOK} target="_blank" rel="noopener noreferrer" className="flex h-12 w-12 items-center justify-center rounded-full border border-slate-100 text-black transition-all hover:bg-black hover:text-white hover:scale-110">
-                    <MessageCircle size={20} />
+                  <a href={settings?.tiktok || SOCIAL_TIKTOK} target="_blank" rel="noopener noreferrer" className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-100 text-black transition-all hover:bg-black hover:text-white hover:scale-110">
+                    <MessageCircle size={18} />
                   </a>
                 )}
               </div>
             </div>
             
             <div>
-              <h4 className="mb-10 text-[10px] font-black uppercase tracking-[0.3em] text-black">Explorar</h4>
-              <ul className="space-y-5 text-[11px] font-black uppercase tracking-widest text-slate-400">
+              <h4 className="mb-6 text-[9px] font-black uppercase tracking-[0.3em] text-black">Explorar</h4>
+              <ul className="space-y-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <li><a href="#inicio" className="hover:text-black transition-colors">Inicio</a></li>
                 <li><a href="#productos" className="hover:text-black transition-colors">Catálogo</a></li>
                 <li><a href="#testimonios" className="hover:text-black transition-colors">Testimonios</a></li>
@@ -996,29 +982,29 @@ function StoreFront() {
             </div>
 
             <div>
-              <h4 className="mb-10 text-[10px] font-black uppercase tracking-[0.3em] text-black">Contacto</h4>
-              <ul className="space-y-8 text-[11px] font-black uppercase tracking-widest text-slate-400">
+              <h4 className="mb-6 text-[9px] font-black uppercase tracking-[0.3em] text-black">Contacto</h4>
+              <ul className="space-y-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
                 <li className="flex items-center gap-4">
-                  <Phone size={16} className="text-black" />
+                  <Phone size={14} className="text-black" />
                   {settings?.phone || '+51 976 791 234'}
                 </li>
                 <li className="flex items-center gap-4">
-                  <MessageCircle size={16} className="text-black" />
+                  <MessageCircle size={14} className="text-black" />
                   <a href={`https://wa.me/${settings?.whatsapp || CONTACT_PHONE}`} target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">WhatsApp Nacional</a>
                 </li>
                 <li className="flex items-center gap-4">
-                  <MapPin size={16} className="text-black" />
+                  <MapPin size={14} className="text-black" />
                   {settings?.address || COMPANY_ADDRESS}
                 </li>
                 <li className="flex items-center gap-4 text-black">
-                  <Truck size={16} />
+                  <Truck size={14} />
                   Envíos a todo el Perú
                 </li>
               </ul>
             </div>
           </div>
           
-          <div className="mt-32 border-t border-slate-50 pt-16 text-center text-[9px] font-black uppercase tracking-[0.4em] text-slate-300">
+          <div className="mt-20 border-t border-slate-50 pt-10 text-center text-[8px] font-black uppercase tracking-[0.4em] text-slate-300">
             <p>© {new Date().getFullYear()} {BRAND_NAME} PERÚ. TODOS LOS DERECHOS RESERVADOS.</p>
           </div>
         </div>
@@ -1032,11 +1018,11 @@ function StoreFront() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={() => setIsCartOpen(true)}
-          className="relative flex h-16 w-16 items-center justify-center rounded-full bg-black text-white shadow-2xl shadow-black/40"
+          className="relative flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-2xl shadow-black/40"
         >
-          <ShoppingCart size={32} />
+          <ShoppingCart size={28} />
           {cart.length > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black text-[10px] font-black">
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black text-[9px] font-black">
               {cart.reduce((s, i) => s + i.quantity, 0)}
             </span>
           )}
@@ -1049,9 +1035,9 @@ function StoreFront() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => window.open(`https://wa.me/${settings?.whatsapp || CONTACT_PHONE}`, '_blank')}
-            className="flex h-16 w-16 items-center justify-center rounded-full bg-black text-white shadow-2xl shadow-black/40"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-2xl shadow-black/40"
           >
-            <MessageCircle size={32} />
+            <MessageCircle size={28} />
           </motion.button>
         )}
       </div>
@@ -1312,12 +1298,12 @@ function StoreFront() {
                           >
                             <Minus size={20} />
                           </button>
-                          <span className="text-xl font-black w-8 text-center">{modalQuantity}</span>
+                          <span className="text-lg font-black w-8 text-center">{modalQuantity}</span>
                           <button 
                             onClick={() => setModalQuantity(modalQuantity + 1)}
                             className="text-slate-400 hover:text-black transition-colors"
                           >
-                            <Plus size={20} />
+                            <Plus size={18} />
                           </button>
                         </div>
                         
@@ -1328,22 +1314,22 @@ function StoreFront() {
                             setModalQuantity(1);
                             setIsCartOpen(true);
                           }}
-                          className="flex flex-1 items-center justify-center gap-3 rounded-2xl bg-black py-5 text-xs font-black text-white transition-all hover:bg-slate-800 uppercase tracking-widest shadow-xl shadow-black/20"
+                          className="flex flex-1 items-center justify-center gap-3 rounded-2xl bg-black py-4 text-[10px] font-black text-white transition-all hover:bg-slate-800 uppercase tracking-widest shadow-xl shadow-black/20"
                         >
-                          <ShoppingCart size={20} />
+                          <ShoppingCart size={18} />
                           Añadir al Carrito
                         </button>
 
                         <div className="flex gap-4">
                           <button 
                             onClick={() => toggleWishlist(selectedProduct.id)}
-                            className={`flex-1 sm:flex-none rounded-2xl border p-5 transition-all flex items-center justify-center ${
+                            className={`flex-1 sm:flex-none rounded-2xl border p-4 transition-all flex items-center justify-center ${
                               wishlist.includes(selectedProduct.id) 
                                 ? 'border-red-100 text-red-500 bg-red-50' 
                                 : 'border-slate-100 text-slate-300 hover:text-red-500 hover:border-red-100'
                             }`}
                           >
-                            <Heart size={24} fill={wishlist.includes(selectedProduct.id) ? "currentColor" : "none"} />
+                            <Heart size={20} fill={wishlist.includes(selectedProduct.id) ? "currentColor" : "none"} />
                           </button>
                         </div>
                       </div>
@@ -1374,23 +1360,23 @@ function StoreFront() {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed bottom-0 right-0 top-0 z-[120] flex w-full max-w-md flex-col bg-white shadow-2xl"
             >
-              <div className="flex items-center justify-between border-b border-slate-50 p-8">
+              <div className="flex items-center justify-between border-b border-slate-50 p-6">
                 <div className="flex items-center gap-4">
                   {checkoutStep === 2 && (
                     <button onClick={() => setCheckoutStep(1)} className="text-slate-400 hover:text-black transition-colors">
-                      <ArrowLeft size={20} />
+                      <ArrowLeft size={18} />
                     </button>
                   )}
-                  <h2 className="text-sm font-black uppercase tracking-[0.3em] text-black">
+                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-black">
                     {checkoutStep === 1 ? 'Tu Selección' : 'Finalizar Pedido'}
                   </h2>
                 </div>
                 <button onClick={() => setIsCartOpen(false)} className="text-slate-400 hover:text-black transition-colors">
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-8 no-scrollbar">
+              <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
                 {checkoutStep === 1 ? (
                   cart.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center text-center">
@@ -1409,24 +1395,24 @@ function StoreFront() {
                     <div className="space-y-8">
                       {cart.map((item) => (
                         <div key={item.product.id} className="flex gap-6 group">
-                          <div className="h-28 w-24 overflow-hidden rounded-2xl bg-slate-50 shrink-0">
+                          <div className="h-24 w-20 overflow-hidden rounded-2xl bg-slate-50 shrink-0">
                             <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" referrerPolicy="no-referrer" />
                           </div>
                           <div className="flex flex-1 flex-col justify-center">
                             <div className="flex items-start justify-between mb-1">
-                              <h4 className="text-sm font-black text-black tracking-tight">{item.product.name}</h4>
+                              <h4 className="text-xs font-black text-black tracking-tight">{item.product.name}</h4>
                               <button onClick={() => removeFromCart(item.product.id)} className="text-slate-300 hover:text-black transition-colors">
-                                <Trash2 size={16} />
+                                <Trash2 size={14} />
                               </button>
                             </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">S/ {item.product.price}</p>
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-4">S/ {item.product.price}</p>
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-4 rounded-full border border-slate-100 px-3 py-1">
-                                <button onClick={() => updateQuantity(item.product.id, -1)} className="p-1 text-slate-400 hover:text-black"><Minus size={12} /></button>
-                                <span className="text-xs font-black w-4 text-center">{item.quantity}</span>
-                                <button onClick={() => updateQuantity(item.product.id, 1)} className="p-1 text-slate-400 hover:text-black"><Plus size={12} /></button>
+                                <button onClick={() => updateQuantity(item.product.id, -1)} className="p-1 text-slate-400 hover:text-black"><Minus size={10} /></button>
+                                <span className="text-[10px] font-black w-4 text-center">{item.quantity}</span>
+                                <button onClick={() => updateQuantity(item.product.id, 1)} className="p-1 text-slate-400 hover:text-black"><Plus size={10} /></button>
                               </div>
-                              <p className="text-sm font-black text-black">S/ {item.product.price * item.quantity}</p>
+                              <p className="text-xs font-black text-black">S/ {item.product.price * item.quantity}</p>
                             </div>
                           </div>
                         </div>
@@ -1436,58 +1422,58 @@ function StoreFront() {
                 ) : (
                   <div className="space-y-8">
                     {/* Trust Signals Bar */}
-                    <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-50 p-4 border border-slate-100">
+                    <div className="grid grid-cols-3 gap-2 rounded-2xl bg-slate-50 p-3 border border-slate-100">
                       <div className="flex flex-col items-center text-center gap-1">
                         <div className="rounded-full bg-white p-2 text-black shadow-sm">
-                          <ShieldCheck size={14} />
+                          <ShieldCheck size={12} />
                         </div>
-                        <span className="text-[8px] font-black uppercase tracking-tighter text-slate-500">Garantía Total</span>
+                        <span className="text-[7px] font-black uppercase tracking-tighter text-slate-500">Garantía Total</span>
                       </div>
                       <div className="flex flex-col items-center text-center gap-1">
                         <div className="rounded-full bg-white p-2 text-black shadow-sm">
-                          <Truck size={14} />
+                          <Truck size={12} />
                         </div>
-                        <span className="text-[8px] font-black uppercase tracking-tighter text-slate-500">Envío Seguro</span>
+                        <span className="text-[7px] font-black uppercase tracking-tighter text-slate-500">Envío Seguro</span>
                       </div>
                       <div className="flex flex-col items-center text-center gap-1">
                         <div className="rounded-full bg-white p-2 text-black shadow-sm">
-                          <Leaf size={14} />
+                          <Leaf size={12} />
                         </div>
-                        <span className="text-[8px] font-black uppercase tracking-tighter text-slate-500">100% Natural</span>
+                        <span className="text-[7px] font-black uppercase tracking-tighter text-slate-500">100% Natural</span>
                       </div>
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2">
-                        <User size={12} /> Nombre Completo
+                      <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2">
+                        <User size={10} /> Nombre Completo
                       </label>
                       <input 
                         type="text" 
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none transition-colors"
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-5 py-3 text-xs font-medium focus:border-black focus:outline-none transition-colors"
                         placeholder="Ej. Juan Pérez"
                       />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2">
-                        <Phone size={12} /> Teléfono
+                      <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2">
+                        <Phone size={10} /> Teléfono
                       </label>
                       <input 
                         type="tel" 
                         value={formData.phone}
                         onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none transition-colors"
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-5 py-3 text-xs font-medium focus:border-black focus:outline-none transition-colors"
                         placeholder="Ej. 987654321"
                       />
                     </div>
                     <div className="space-y-6">
                       <div className="space-y-3">
-                        <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Departamento</label>
+                        <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400">Departamento</label>
                         <select 
                           value={formData.department}
                           onChange={(e) => setFormData({...formData, department: e.target.value, province: '', district: '', address: ''})}
-                          className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none transition-colors appearance-none"
+                          className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-5 py-3 text-xs font-medium focus:border-black focus:outline-none transition-colors appearance-none"
                         >
                           <option value="">Seleccionar</option>
                           {PERU_LOCATIONS.map(r => <option key={r.id} value={r.name}>{r.name}</option>)}
@@ -1496,11 +1482,11 @@ function StoreFront() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-3">
-                          <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Provincia</label>
+                          <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400">Provincia</label>
                           <select 
                             value={formData.province}
                             onChange={(e) => setFormData({...formData, province: e.target.value, district: '', address: ''})}
-                            className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none transition-colors appearance-none"
+                            className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-5 py-3 text-xs font-medium focus:border-black focus:outline-none transition-colors appearance-none"
                             disabled={!formData.department}
                           >
                             <option value="">Seleccionar</option>
@@ -1510,7 +1496,7 @@ function StoreFront() {
                           </select>
                         </div>
                         <div className="space-y-3">
-                          <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Distrito</label>
+                          <label className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-400">Distrito</label>
                           <select 
                             value={formData.district}
                             onChange={(e) => setFormData({...formData, district: e.target.value})}
@@ -1572,17 +1558,17 @@ function StoreFront() {
                 )}
               </div>
 
-              <div className="border-t border-slate-50 p-8 space-y-6">
+              <div className="border-t border-slate-50 p-6 space-y-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Total Estimado</span>
-                  <span className="text-2xl font-black text-black tracking-tight">S/ {cartTotal}</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Total Estimado</span>
+                  <span className="text-xl font-black text-black tracking-tight">S/ {cartTotal}</span>
                 </div>
                 
                 {checkoutStep === 1 ? (
                   <button 
                     disabled={cart.length === 0}
                     onClick={() => setCheckoutStep(2)}
-                    className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-5 text-[11px] font-black text-white transition-all hover:bg-slate-800 disabled:opacity-50 uppercase tracking-widest shadow-xl shadow-black/10"
+                    className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-4 text-[10px] font-black text-white transition-all hover:bg-slate-800 disabled:opacity-50 uppercase tracking-widest shadow-xl shadow-black/10"
                   >
                     CONTINUAR PEDIDO
                   </button>
@@ -1598,7 +1584,7 @@ function StoreFront() {
                         (formData.department === 'Lima' && formData.province === 'Lima' && !formData.address)
                       }
                       onClick={handleWhatsAppOrder}
-                      className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-emerald-600 py-6 text-[12px] font-black text-white transition-all hover:bg-emerald-700 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 uppercase tracking-[0.2em] shadow-2xl shadow-emerald-200"
+                      className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-emerald-600 py-5 text-[11px] font-black text-white transition-all hover:bg-emerald-700 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 uppercase tracking-[0.2em] shadow-2xl shadow-emerald-200"
                     >
                       <MessageCircle size={18} className="relative z-10" />
                       <span className="relative z-10">¡SÍ, QUIERO MI PEDIDO!</span>
@@ -1629,7 +1615,7 @@ function StoreFront() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] bg-white p-6 md:p-10 shadow-2xl my-auto"
+              className="relative w-full max-w-lg overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] bg-white p-5 md:p-8 shadow-2xl my-auto"
             >
               <button 
                 onClick={() => setIsPopupOpen(false)}
@@ -1637,24 +1623,24 @@ function StoreFront() {
               >
                 <X size={18} />
               </button>
-              <div className="text-center mb-4 md:mb-8">
-                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Exclusivo para ti</span>
-                <h2 className="text-lg md:text-3xl font-black uppercase tracking-tighter mt-1 md:mt-2">Ofertas de Hoy</h2>
+              <div className="text-center mb-4 md:mb-6">
+                <span className="text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Exclusivo para ti</span>
+                <h2 className="text-base md:text-2xl font-black uppercase tracking-tighter mt-1 md:mt-2">Ofertas de Hoy</h2>
               </div>
               <div className="space-y-3 md:space-y-4 max-h-[55vh] md:max-h-[65vh] overflow-y-auto no-scrollbar pr-1">
                 {popupOffers.map(offer => (
-                  <div key={offer.id} className="group relative rounded-xl md:rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 p-2.5 md:p-4 transition-all hover:border-black">
+                  <div key={offer.id} className="group relative rounded-xl md:rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 p-2 md:p-3 transition-all hover:border-black">
                     <div className="aspect-[16/9] w-full overflow-hidden rounded-lg md:rounded-2xl mb-2 md:mb-4">
                       <img src={offer.image_url} alt={offer.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     <div className="flex flex-col gap-2 md:gap-4">
-                      <h3 className="text-[10px] md:text-sm font-black uppercase tracking-tight leading-tight">{offer.title}</h3>
+                      <h3 className="text-[9px] md:text-xs font-black uppercase tracking-tight leading-tight">{offer.title}</h3>
                       <button 
                         onClick={() => {
                           setIsPopupOpen(false);
                           document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
                         }}
-                        className="w-full rounded-full bg-black py-2.5 md:py-4 text-[8px] md:text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all shadow-lg shadow-black/10"
+                        className="w-full rounded-full bg-black py-2 md:py-3 text-[7px] md:text-[9px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all shadow-lg shadow-black/10"
                       >
                         Aprovechar Oferta
                       </button>
