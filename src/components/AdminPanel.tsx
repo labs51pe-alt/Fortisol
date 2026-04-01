@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { supabase } from '../lib/supabase';
+import CRM from './CRM';
 import { 
   Plus, 
   Trash2, 
@@ -20,13 +22,18 @@ import {
   MessageCircle,
   Instagram,
   Facebook,
-  MapPin
+  MapPin,
+  Users,
+  Lock,
+  LogIn
 } from 'lucide-react';
 
 import { Product, Slide, CompanySettings } from '../types';
 
 export default function AdminPanel() {
-  const [activeTab, setActiveTab] = useState<'products' | 'slides' | 'settings'>('products');
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [password, setPassword] = useState('');
+  const [activeTab, setActiveTab] = useState<'products' | 'slides' | 'settings' | 'crm'>('products');
   const [products, setProducts] = useState<Product[]>([]);
   const [slides, setSlides] = useState<Slide[]>([]);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
@@ -178,6 +185,73 @@ export default function AdminPanel() {
     setLoading(false);
   };
 
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simple password check - in a real app this should be more secure
+    if (password === 'fortisol2024') {
+      setIsAuthorized(true);
+      localStorage.setItem('admin_auth', 'true');
+    } else {
+      setStatus({ type: 'error', message: 'Clave incorrecta' });
+    }
+  };
+
+  useEffect(() => {
+    const auth = localStorage.getItem('admin_auth');
+    if (auth === 'true') {
+      setIsAuthorized(true);
+    }
+  }, []);
+
+  if (!isAuthorized) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md overflow-hidden rounded-[2.5rem] bg-white p-10 shadow-2xl shadow-slate-200"
+        >
+          <div className="mb-8 flex flex-col items-center text-center">
+            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-black text-white shadow-xl shadow-black/20">
+              <Lock size={28} />
+            </div>
+            <h2 className="text-2xl font-black tracking-tight uppercase">Acceso Restringido</h2>
+            <p className="mt-2 text-sm font-medium text-slate-400">Ingresa la clave de administrador para continuar</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Clave Maestra</label>
+              <input 
+                type="password" 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-center text-lg font-black tracking-[0.5em] focus:border-black focus:outline-none transition-all"
+                autoFocus
+              />
+            </div>
+
+            {status && status.type === 'error' && (
+              <p className="text-center text-[10px] font-black uppercase tracking-widest text-rose-500">{status.message}</p>
+            )}
+
+            <button 
+              type="submit"
+              className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-slate-800 shadow-xl shadow-black/10"
+            >
+              <LogIn size={18} /> Entrar al Panel
+            </button>
+          </form>
+
+          <div className="mt-10 text-center">
+            <a href="/" className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-black transition-colors">Volver a la tienda</a>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   if (loading && products.length === 0) {
     return (
       <div className="flex h-screen items-center justify-center bg-white">
@@ -205,6 +279,12 @@ export default function AdminPanel() {
               <Package size={14} /> Productos
             </button>
             <button 
+              onClick={() => setActiveTab('crm')}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+            >
+              <Users size={14} /> CRM
+            </button>
+            <button 
               onClick={() => setActiveTab('slides')}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'slides' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
             >
@@ -215,6 +295,15 @@ export default function AdminPanel() {
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
             >
               <SettingsIcon size={14} /> Configuración
+            </button>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('admin_auth');
+                setIsAuthorized(false);
+              }}
+              className="flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all"
+            >
+              Salir
             </button>
           </div>
         </div>
@@ -233,9 +322,9 @@ export default function AdminPanel() {
 
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-black tracking-tight uppercase">
-            {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : 'Configuración de Empresa'}
+            {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : activeTab === 'crm' ? 'Gestión de Pedidos y Clientes' : 'Configuración de Empresa'}
           </h2>
-          {activeTab !== 'settings' && (
+          {activeTab !== 'settings' && activeTab !== 'crm' && (
             <button 
               onClick={() => {
                 setIsEditing('new');
@@ -340,6 +429,8 @@ export default function AdminPanel() {
               <p className="text-slate-300 text-xs mt-1">Añade imágenes para el banner principal</p>
             </div>
           )
+        ) : activeTab === 'crm' ? (
+          <CRM isEmbedded={true} />
         ) : (
           <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-[2.5rem] border border-slate-100 p-10 shadow-sm">

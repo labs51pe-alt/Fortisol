@@ -46,7 +46,7 @@ const statusConfig = {
   cancelled: { label: 'Cancelado', color: 'bg-rose-100 text-rose-700 border-rose-200', icon: XCircle },
 };
 
-export default function CRM() {
+export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'orders' | 'customers'>('orders');
@@ -116,58 +116,102 @@ export default function CRM() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className={`${isEmbedded ? '' : 'min-h-screen bg-slate-50'} font-sans text-slate-900`}>
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <a href="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black transition-colors hover:bg-black hover:text-white">
-              <ArrowLeft size={20} />
-            </a>
-            <h1 className="text-xl font-black tracking-tight">CRM <span className="text-slate-400 font-medium">FORTISOL</span></h1>
-          </div>
-          <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-full">
-            <button 
-              onClick={() => setActiveTab('orders')}
-              className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'orders' ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              Pedidos
-            </button>
-            <button 
-              onClick={() => setActiveTab('customers')}
-              className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'customers' ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              Clientes
-            </button>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="relative hidden sm:block">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input 
-                type="text" 
-                placeholder={activeTab === 'orders' ? "Buscar pedido..." : "Buscar cliente..."} 
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-64 rounded-full border border-slate-200 bg-slate-100 py-2 pl-12 pr-6 text-xs font-medium focus:border-black focus:outline-none transition-all"
-              />
+      {!isEmbedded && (
+        <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <div className="flex items-center gap-4">
+              <a href="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black transition-colors hover:bg-black hover:text-white">
+                <ArrowLeft size={20} />
+              </a>
+              <h1 className="text-xl font-black tracking-tight">CRM <span className="text-slate-400 font-medium">FORTISOL</span></h1>
             </div>
-            {activeTab === 'orders' && (
-              <select 
-                value={filterStatus}
-                onChange={e => setFilterStatus(e.target.value)}
-                className="rounded-full border border-slate-200 bg-slate-100 px-6 py-2 text-xs font-black uppercase tracking-widest focus:border-black focus:outline-none"
+            <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-full">
+              <button 
+                onClick={() => setActiveTab('orders')}
+                className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'orders' ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
               >
-                <option value="all">TODOS LOS ESTADOS</option>
-                {Object.entries(statusConfig).map(([key, { label }]) => (
-                  <option key={key} value={key}>{label.toUpperCase()}</option>
-                ))}
-              </select>
-            )}
+                Pedidos
+              </button>
+              <button 
+                onClick={() => setActiveTab('customers')}
+                className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'customers' ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                Clientes
+              </button>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="relative hidden sm:block">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <input 
+                  type="text" 
+                  placeholder={activeTab === 'orders' ? "Buscar pedido..." : "Buscar cliente..."} 
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-64 rounded-full border border-slate-200 bg-slate-100 py-2 pl-12 pr-6 text-xs font-medium focus:border-black focus:outline-none transition-all"
+                />
+              </div>
+              {activeTab === 'orders' && (
+                <select 
+                  value={filterStatus}
+                  onChange={e => setFilterStatus(e.target.value)}
+                  className="rounded-full border border-slate-200 bg-slate-100 px-6 py-2 text-xs font-black uppercase tracking-widest focus:border-black focus:outline-none"
+                >
+                  <option value="all">TODOS LOS ESTADOS</option>
+                  {Object.entries(statusConfig).map(([key, { label }]) => (
+                    <option key={key} value={key}>{label.toUpperCase()}</option>
+                  ))}
+                </select>
+              )}
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
-      <main className="mx-auto max-w-7xl p-6">
+      <main className={`${isEmbedded ? '' : 'mx-auto max-w-7xl p-6'}`}>
+        {isEmbedded && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-full">
+              <button 
+                onClick={() => setActiveTab('orders')}
+                className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'orders' ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                Pedidos
+              </button>
+              <button 
+                onClick={() => setActiveTab('customers')}
+                className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'customers' ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                Clientes
+              </button>
+            </div>
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="relative flex-1 sm:flex-none">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <input 
+                  type="text" 
+                  placeholder={activeTab === 'orders' ? "Buscar pedido..." : "Buscar cliente..."} 
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full sm:w-64 rounded-full border border-slate-200 bg-slate-100 py-2 pl-12 pr-6 text-xs font-medium focus:border-black focus:outline-none transition-all"
+                />
+              </div>
+              {activeTab === 'orders' && (
+                <select 
+                  value={filterStatus}
+                  onChange={e => setFilterStatus(e.target.value)}
+                  className="rounded-full border border-slate-200 bg-slate-100 px-6 py-2 text-xs font-black uppercase tracking-widest focus:border-black focus:outline-none"
+                >
+                  <option value="all">ESTADOS</option>
+                  {Object.entries(statusConfig).map(([key, { label }]) => (
+                    <option key={key} value={key}>{label.toUpperCase()}</option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+        )}
         <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/50">
           {activeTab === 'orders' ? (
             <table className="w-full text-left border-collapse">

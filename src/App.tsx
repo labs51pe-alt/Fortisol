@@ -61,7 +61,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<StoreFront />} />
         <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/crm" element={<CRM />} />
       </Routes>
     </Router>
   );
@@ -328,8 +327,6 @@ function StoreFront() {
             <a href="#inicio" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Inicio</a>
             <a href="#productos" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Catálogo</a>
             <a href="#testimonios" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Testimonios</a>
-            <Link to="/admin" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>Admin</Link>
-            <Link to="/crm" className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}>CRM</Link>
           </div>
 
           <div className="flex items-center gap-4">
