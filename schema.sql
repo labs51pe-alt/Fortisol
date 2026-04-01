@@ -70,12 +70,25 @@ CREATE TABLE IF NOT EXISTS offers (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Testimonials Table
+CREATE TABLE IF NOT EXISTS testimonials (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  location TEXT,
+  text TEXT NOT NULL,
+  avatar TEXT,
+  video_url TEXT,
+  thumbnail TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Disable Row Level Security (RLS) for tables that use custom frontend authentication
 ALTER TABLE products DISABLE ROW LEVEL SECURITY;
 ALTER TABLE slides DISABLE ROW LEVEL SECURITY;
 ALTER TABLE orders DISABLE ROW LEVEL SECURITY;
 ALTER TABLE settings DISABLE ROW LEVEL SECURITY;
 ALTER TABLE offers DISABLE ROW LEVEL SECURITY;
+ALTER TABLE testimonials DISABLE ROW LEVEL SECURITY;
 
 -- 7. Configurar Almacenamiento (Storage)
 -- Crear bucket 'fortisol-assets' manualmente en el panel de Supabase o vía SQL:

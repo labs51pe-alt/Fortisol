@@ -49,10 +49,11 @@ const DEFAULT_SETTINGS: CompanySettings = {
 export default function AdminPanel() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [password, setPassword] = useState('');
-  const [activeTab, setActiveTab] = useState<'products' | 'slides' | 'settings' | 'crm' | 'offers'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'slides' | 'settings' | 'crm' | 'offers' | 'testimonials'>('products');
   const [products, setProducts] = useState<Product[]>([]);
   const [slides, setSlides] = useState<Slide[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
   const [settings, setSettings] = useState<CompanySettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState<string | null>(null);
@@ -70,11 +71,13 @@ export default function AdminPanel() {
       const { data: productsData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
       const { data: slidesData } = await supabase.from('slides').select('*').order('order_index', { ascending: true });
       const { data: offersData } = await supabase.from('offers').select('*');
+      const { data: testimonialsData } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
       const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
       
       if (productsData) setProducts(productsData);
       if (slidesData) setSlides(slidesData);
       if (offersData) setOffers(offersData);
+      if (testimonialsData) setTestimonials(testimonialsData);
       if (settingsData) {
         setSettings(settingsData.value);
       } else {
@@ -156,6 +159,12 @@ export default function AdminPanel() {
         className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'offers' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
       >
         <Package size={14} /> Ofertas
+      </button>
+      <button 
+        onClick={() => { setActiveTab('testimonials'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'testimonials' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+      >
+        <MessageCircle size={14} /> Testimonios
       </button>
       <button 
         onClick={() => { setActiveTab('settings'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
@@ -307,6 +316,35 @@ export default function AdminPanel() {
     setLoading(false);
   };
 
+  const handleSaveTestimonial = async (testimonial: Partial<any>) => {
+    setLoading(true);
+    const { error } = testimonial.id 
+      ? await supabase.from('testimonials').update(testimonial).eq('id', testimonial.id)
+      : await supabase.from('testimonials').insert([testimonial]);
+
+    if (error) {
+      setStatus({ type: 'error', message: 'Error al guardar el testimonio: ' + error.message });
+    } else {
+      setStatus({ type: 'success', message: 'Testimonio guardado correctamente' });
+      setIsEditing(null);
+      fetchData();
+    }
+    setLoading(false);
+  };
+
+  const handleDeleteTestimonial = async (id: string) => {
+    if (!confirm('¿Estás seguro de eliminar este testimonio?')) return;
+    setLoading(true);
+    const { error } = await supabase.from('testimonials').delete().eq('id', id);
+    if (error) {
+      setStatus({ type: 'error', message: 'Error al eliminar: ' + error.message });
+    } else {
+      setStatus({ type: 'success', message: 'Testimonio eliminado' });
+      fetchData();
+    }
+    setLoading(false);
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Simple password check - in a real app this should be more secure
@@ -430,7 +468,7 @@ export default function AdminPanel() {
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
           <h2 className="text-lg md:text-2xl font-black tracking-tight uppercase">
-            {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : activeTab === 'offers' ? 'Gestión de Ofertas' : activeTab === 'crm' ? 'Gestión de Pedidos y Clientes' : 'Configuración de Empresa'}
+            {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : activeTab === 'offers' ? 'Gestión de Ofertas' : activeTab === 'testimonials' ? 'Gestión de Testimonios' : activeTab === 'crm' ? 'Gestión de Pedidos y Clientes' : 'Configuración de Empresa'}
           </h2>
           {activeTab !== 'settings' && activeTab !== 'crm' && (
             <button 
@@ -451,11 +489,18 @@ export default function AdminPanel() {
                   product_id: '',
                   image_url: '',
                   is_active: true
+                } : activeTab === 'testimonials' ? {
+                  name: '',
+                  location: '',
+                  text: '',
+                  avatar: '',
+                  video_url: '',
+                  thumbnail: ''
                 } : { title: '', subtitle: '', image_url: '', button_text: 'Comprar Ahora', button_link: '#productos', order_index: slides.length });
               }}
               className="flex items-center justify-center gap-2 rounded-full bg-black px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:scale-105 active:scale-95 shadow-xl shadow-black/10 w-full md:w-auto"
             >
-              <Plus size={16} /> {activeTab === 'products' ? 'Nuevo Producto' : activeTab === 'offers' ? 'Nueva Oferta' : 'Nueva Diapositiva'}
+              <Plus size={16} /> {activeTab === 'products' ? 'Nuevo Producto' : activeTab === 'offers' ? 'Nueva Oferta' : activeTab === 'testimonials' ? 'Nuevo Testimonio' : 'Nueva Diapositiva'}
             </button>
           )}
         </div>
@@ -579,6 +624,46 @@ export default function AdminPanel() {
               <Package size={48} className="text-slate-200 mb-4" />
               <p className="text-slate-400 font-bold">No hay ofertas registradas</p>
               <p className="text-slate-300 text-xs mt-1">Haz clic en "Nueva Oferta" para comenzar</p>
+            </div>
+          )
+        ) : activeTab === 'testimonials' ? (
+          testimonials.length > 0 ? (
+            <div className="space-y-4">
+              {testimonials.map(testimonial => (
+                <div key={testimonial.id} className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition-all hover:shadow-md">
+                  <div className="h-16 w-16 overflow-hidden rounded-full bg-slate-100 shrink-0">
+                    <img src={testimonial.avatar || 'https://i.pravatar.cc/150'} alt={testimonial.name} className="h-full w-full object-cover" />
+                  </div>
+                  <div className="flex-1 w-full text-center md:text-left">
+                    <h3 className="text-sm font-black tracking-tight">{testimonial.name}</h3>
+                    <p className="text-xs text-slate-500">{testimonial.location}</p>
+                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{testimonial.text}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        setIsEditing(testimonial.id);
+                        setEditForm(testimonial);
+                      }}
+                      className="rounded-full bg-slate-100 p-3 text-black hover:bg-black hover:text-white transition-all"
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteTestimonial(testimonial.id)}
+                      className="rounded-full bg-slate-100 p-3 text-rose-600 hover:bg-rose-600 hover:text-white transition-all"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[2.5rem] border border-dashed border-slate-200">
+              <MessageCircle size={48} className="text-slate-200 mb-4" />
+              <p className="text-slate-400 font-bold">No hay testimonios registrados</p>
+              <p className="text-slate-300 text-xs mt-1">Haz clic en "Nuevo Testimonio" para comenzar</p>
             </div>
           )
         ) : activeTab === 'crm' ? (
@@ -743,7 +828,7 @@ export default function AdminPanel() {
           <div className="relative w-full max-w-2xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 p-8">
               <h3 className="text-xl font-black tracking-tight uppercase">
-                {isEditing === 'new' ? 'Crear Nuevo' : 'Editar'} {activeTab === 'products' ? 'Producto' : activeTab === 'offers' ? 'Oferta' : 'Diapositiva'}
+                {isEditing === 'new' ? 'Crear Nuevo' : 'Editar'} {activeTab === 'products' ? 'Producto' : activeTab === 'offers' ? 'Oferta' : activeTab === 'testimonials' ? 'Testimonio' : 'Diapositiva'}
               </h3>
               <button onClick={() => setIsEditing(null)} className="rounded-full bg-slate-100 p-2 text-slate-400 hover:text-black transition-colors">
                 <X size={20} />
@@ -995,7 +1080,7 @@ export default function AdminPanel() {
                       </div>
                     </div>
                   </>
-                ) : (
+                ) : activeTab === 'slides' ? (
                   <>
                     <div className="col-span-2 space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Título</label>
@@ -1065,7 +1150,99 @@ export default function AdminPanel() {
                       />
                     </div>
                   </>
-                )}
+                ) : activeTab === 'testimonials' ? (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Nombre</label>
+                      <input 
+                        type="text" 
+                        value={editForm.name} 
+                        onChange={e => setEditForm({...editForm, name: e.target.value})}
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ubicación</label>
+                      <input 
+                        type="text" 
+                        value={editForm.location} 
+                        onChange={e => setEditForm({...editForm, location: e.target.value})}
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Testimonio</label>
+                      <textarea 
+                        value={editForm.text} 
+                        onChange={e => setEditForm({...editForm, text: e.target.value})}
+                        rows={3}
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none resize-none"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Avatar URL (Opcional)</label>
+                      <input 
+                        type="text" 
+                        value={editForm.avatar} 
+                        onChange={e => setEditForm({...editForm, avatar: e.target.value})}
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Video URL (TikTok/YouTube/MP4)</label>
+                      <input 
+                        type="text" 
+                        value={editForm.video_url} 
+                        onChange={e => setEditForm({...editForm, video_url: e.target.value})}
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                      />
+                    </div>
+                    <div className="col-span-2 space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Miniatura del Video (Thumbnail)</label>
+                      <div className="flex items-center gap-4">
+                        <div className="h-20 w-32 overflow-hidden rounded-2xl bg-slate-100 border border-slate-100">
+                          {editForm.thumbnail ? (
+                            <img src={editForm.thumbnail} alt="Preview" className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-slate-300">
+                              <ImageIcon size={24} />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const files = e.target.files;
+                              if (!files || files.length === 0) return;
+                              setUploading(true);
+                              const file = files[0];
+                              const fileExt = file.name.split('.').pop();
+                              const fileName = `${Math.random()}.${fileExt}`;
+                              const filePath = `testimonials/${fileName}`;
+                              const { error } = await supabase.storage.from('fortisol-assets').upload(filePath, file);
+                              if (!error) {
+                                const { data } = supabase.storage.from('fortisol-assets').getPublicUrl(filePath);
+                                setEditForm({...editForm, thumbnail: data.publicUrl});
+                              }
+                              setUploading(false);
+                            }}
+                            className="hidden"
+                            id="testimonial-thumbnail-upload"
+                          />
+                          <label 
+                            htmlFor="testimonial-thumbnail-upload"
+                            className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 transition-all hover:border-black hover:text-black"
+                          >
+                            {uploading ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} />}
+                            {uploading ? 'Subiendo...' : 'Subir Miniatura'}
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
               </div>
             </div>
 
@@ -1074,6 +1251,7 @@ export default function AdminPanel() {
                 onClick={() => {
                   if (activeTab === 'products') handleSaveProduct(editForm);
                   else if (activeTab === 'offers') handleSaveOffer(editForm);
+                  else if (activeTab === 'testimonials') handleSaveTestimonial(editForm);
                   else handleSaveSlide(editForm);
                 }}
                 className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-slate-800 shadow-xl shadow-black/10"

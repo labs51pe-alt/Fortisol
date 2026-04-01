@@ -236,7 +236,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: "Arequipa",
     text: "Desde que uso Fortisol Ultra, mis dolores de rodilla han desaparecido. ¡Totalmente recomendado!",
     avatar: "https://i.pravatar.cc/150?u=maria",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-doing-yoga-stretches-on-a-mat-41190-large.mp4",
+    video_url: "https://assets.mixkit.co/videos/preview/mixkit-woman-doing-yoga-stretches-on-a-mat-41190-large.mp4",
     thumbnail: "https://picsum.photos/seed/test1/400/700"
   },
   {
@@ -245,7 +245,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: "Ica",
     text: "El bálsamo es increíble, lo uso después de entrenar y el alivio es instantáneo.",
     avatar: "https://i.pravatar.cc/150?u=juan",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-man-doing-push-ups-in-a-gym-41189-large.mp4",
+    video_url: "https://assets.mixkit.co/videos/preview/mixkit-man-doing-push-ups-in-a-gym-41189-large.mp4",
     thumbnail: "https://picsum.photos/seed/test2/400/700"
   },
   {
@@ -254,7 +254,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: "Lima",
     text: "Excelente atención y los productos llegaron muy rápido a mi casa.",
     avatar: "https://i.pravatar.cc/150?u=elena",
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-woman-running-on-the-beach-at-sunset-41188-large.mp4",
+    video_url: "https://assets.mixkit.co/videos/preview/mixkit-woman-running-on-the-beach-at-sunset-41188-large.mp4",
     thumbnail: "https://picsum.photos/seed/test3/400/700"
   },
   {
@@ -263,7 +263,7 @@ export const TESTIMONIALS: Testimonial[] = [
     location: "TikTok",
     text: "Mira cómo aplicamos nuestros aceites esenciales para un alivio inmediato.",
     avatar: "https://i.pravatar.cc/150?u=fortisol",
-    videoUrl: "https://www.tiktok.com/@fortisolperu/video/7621346529080511745?_r=1&_t=ZS-957pkn4w2JM",
+    video_url: "https://www.tiktok.com/@fortisolperu/video/7621346529080511745?_r=1&_t=ZS-957pkn4w2JM",
     thumbnail: "https://picsum.photos/seed/fortisol-tk/400/700"
   }
 ];

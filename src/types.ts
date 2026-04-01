@@ -46,7 +46,7 @@ export interface Testimonial {
   location: string;
   text: string;
   avatar: string;
-  videoUrl?: string;
+  video_url?: string;
   thumbnail?: string;
 }
 

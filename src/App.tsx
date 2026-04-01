@@ -84,6 +84,7 @@ function StoreFront() {
   // Dynamic Data States
   const [dynamicProducts, setDynamicProducts] = useState<Product[]>([]);
   const [dynamicSlides, setDynamicSlides] = useState<any[]>([]);
+  const [dynamicTestimonials, setDynamicTestimonials] = useState<Testimonial[]>([]);
   const [popupOffers, setPopupOffers] = useState<any[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [settings, setSettings] = useState<CompanySettings | null>(null);
@@ -232,6 +233,7 @@ function StoreFront() {
     const { data: pData } = await supabase.from('products').select('*');
     const { data: sData } = await supabase.from('slides').select('*').order('order_index', { ascending: true });
     const { data: oData } = await supabase.from('offers').select('*').eq('is_active', true).eq('show_in_popup', true).limit(2);
+    const { data: tData } = await supabase.from('testimonials').select('*').order('created_at', { ascending: false });
     const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
     
     if (pData && pData.length > 0) setDynamicProducts(pData);
@@ -239,6 +241,9 @@ function StoreFront() {
 
     if (sData && sData.length > 0) setDynamicSlides(sData);
     else setDynamicSlides([]); // No fallback to demo data
+
+    if (tData && tData.length > 0) setDynamicTestimonials(tData);
+    else setDynamicTestimonials([]);
 
     if (oData && oData.length > 0) {
       setPopupOffers(oData);
@@ -842,7 +847,7 @@ function StoreFront() {
 
           <div className="relative">
             <div className="flex gap-8 overflow-x-auto pb-12 no-scrollbar snap-x snap-mandatory">
-              {TESTIMONIALS.map((t, i) => (
+              {(dynamicTestimonials.length > 0 ? dynamicTestimonials : TESTIMONIALS).map((t, i) => (
                 <motion.div 
                   key={t.id}
                   initial={{ opacity: 0, x: 50 }}
@@ -853,7 +858,7 @@ function StoreFront() {
                   className="relative h-[400px] min-w-[250px] cursor-pointer overflow-hidden rounded-[2rem] bg-slate-100 shadow-2xl transition-all hover:scale-[1.02] snap-start group border border-slate-100"
                 >
                   <img 
-                    src={t.thumbnail} 
+                    src={t.thumbnail || "https://picsum.photos/seed/test1/400/700"} 
                     alt={t.name} 
                     className="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                     referrerPolicy="no-referrer"
@@ -910,19 +915,19 @@ function StoreFront() {
               exit={{ scale: 0.9, y: 20 }}
               className="relative aspect-[9/16] w-full max-w-[450px] overflow-hidden rounded-[3rem] bg-black shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10"
             >
-              {activeStory.videoUrl?.includes('tiktok.com') ? (
+              {activeStory.video_url?.includes('tiktok.com') ? (
                 <div className="h-full w-full bg-black">
                   <iframe
-                    src={getTikTokEmbedUrl(activeStory.videoUrl)}
+                    src={getTikTokEmbedUrl(activeStory.video_url)}
                     className="h-full w-full border-none"
                     allow="autoplay; encrypted-media; picture-in-picture; web-share"
                     allowFullScreen
                   />
                 </div>
-              ) : activeStory.videoUrl?.includes('youtube.com') || activeStory.videoUrl?.includes('youtu.be') ? (
+              ) : activeStory.video_url?.includes('youtube.com') || activeStory.video_url?.includes('youtu.be') ? (
                 <div className="h-full w-full bg-black">
                   <iframe
-                    src={getYoutubeEmbedUrl(activeStory.videoUrl)}
+                    src={getYoutubeEmbedUrl(activeStory.video_url)}
                     className="h-full w-full border-none"
                     allow="autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -930,7 +935,7 @@ function StoreFront() {
                 </div>
               ) : (
                 <video 
-                  src={activeStory.videoUrl} 
+                  src={activeStory.video_url} 
                   autoPlay 
                   loop 
                   muted={isMuted}
