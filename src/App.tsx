@@ -516,47 +516,49 @@ function StoreFront() {
       </section>
 
       {/* Promos Bar (Organa Style) */}
-      <div className="bg-black py-6 overflow-hidden border-y border-white/10">
-        <div className="container mx-auto max-w-7xl px-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-3 text-white">
-                <span className="text-3xl animate-pulse">⚡</span>
-                <h3 className="text-3xl font-black uppercase tracking-tighter">PROMOS AQUI</h3>
-                <span className="text-3xl">🖤</span>
+      {settings?.promo_enabled && (
+        <div className="bg-black py-6 overflow-hidden border-y border-white/10">
+          <div className="container mx-auto max-w-7xl px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3 text-white">
+                  <span className="text-3xl animate-pulse">⚡</span>
+                  <h3 className="text-3xl font-black uppercase tracking-tighter">{settings?.promo_title || 'PROMOS AQUI'}</h3>
+                  <span className="text-3xl">🖤</span>
+                </div>
+                <div className="hidden lg:block h-10 w-px bg-white/20 mx-2" />
+                <p className="text-xs font-black text-white/80 uppercase tracking-[0.2em] hidden lg:block">
+                  ¡OFERTAS EXCLUSIVAS POR TIEMPO LIMITADO!
+                </p>
               </div>
-              <div className="hidden lg:block h-10 w-px bg-white/20 mx-2" />
-              <p className="text-xs font-black text-white/80 uppercase tracking-[0.2em] hidden lg:block">
-                ¡OFERTAS EXCLUSIVAS POR TIEMPO LIMITADO!
-              </p>
-            </div>
 
-            <div className="flex items-center gap-6">
-              <div className="flex gap-3">
-                {[
-                  { label: 'Días', value: timeLeft.days },
-                  { label: 'Horas', value: timeLeft.hours },
-                  { label: 'Minutos', value: timeLeft.minutes },
-                  { label: 'Segundos', value: timeLeft.seconds }
-                ].map((unit, i) => (
-                  <div key={i} className="flex flex-col items-center">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-2xl font-black text-white shadow-inner">
-                      {unit.value.toString().padStart(2, '0')}
+              <div className="flex items-center gap-6">
+                <div className="flex gap-3">
+                  {[
+                    { label: 'Días', value: timeLeft.days },
+                    { label: 'Horas', value: timeLeft.hours },
+                    { label: 'Minutos', value: timeLeft.minutes },
+                    { label: 'Segundos', value: timeLeft.seconds }
+                  ].map((unit, i) => (
+                    <div key={i} className="flex flex-col items-center">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-2xl font-black text-white shadow-inner">
+                        {unit.value.toString().padStart(2, '0')}
+                      </div>
+                      <span className="mt-2 text-[9px] font-black uppercase tracking-widest text-white/50">{unit.label}</span>
                     </div>
-                    <span className="mt-2 text-[9px] font-black uppercase tracking-widest text-white/50">{unit.label}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <button 
+                  onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="rounded-full bg-white px-8 py-4 text-[11px] font-black text-black uppercase tracking-widest hover:bg-slate-100 transition-all hover:scale-105 active:scale-95 shadow-xl"
+                >
+                  VER MÁS
+                </button>
               </div>
-              <button 
-                onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-                className="rounded-full bg-white px-8 py-4 text-[11px] font-black text-black uppercase tracking-widest hover:bg-slate-100 transition-all hover:scale-105 active:scale-95 shadow-xl"
-              >
-                VER MÁS
-              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Features */}
       <section className="bg-white py-24 border-y border-slate-100">

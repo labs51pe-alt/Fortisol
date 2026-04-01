@@ -61,4 +61,6 @@ export interface CompanySettings {
   show_instagram: boolean;
   show_tiktok: boolean;
   show_whatsapp: boolean;
+  promo_title: string;
+  promo_enabled: boolean;
 }

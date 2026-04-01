@@ -559,6 +559,24 @@ export default function AdminPanel() {
                 </div>
               </div>
 
+              <div className="space-y-3 pt-4 border-t border-slate-100 mb-8">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Barra de Promociones</label>
+                  <button 
+                    onClick={() => setSettings(s => s ? {...s, promo_enabled: !s.promo_enabled} : null)}
+                    className={`text-[9px] font-black px-3 py-1 rounded-full transition-colors ${settings?.promo_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}`}
+                  >
+                    {settings?.promo_enabled ? 'VISIBLE' : 'OCULTO'}
+                  </button>
+                </div>
+                <input 
+                  type="text" 
+                  value={settings?.promo_title || ''} 
+                  onChange={e => setSettings(s => s ? {...s, promo_title: e.target.value} : null)}
+                  placeholder="Título de la promoción"
+                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                />
+              </div>
               <div className="mt-12 pt-8 border-t border-slate-100">
                 <button 
                   onClick={() => settings && handleSaveSettings(settings)}
