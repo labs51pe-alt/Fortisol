@@ -20,6 +20,8 @@ export interface Product {
     servingsPerContainer: string;
     energy: string;
   };
+  is_combo?: boolean;
+  combo_product_ids?: string[];
 }
 
 export interface CartItem {

@@ -155,7 +155,7 @@ function StoreFront() {
   const activeProducts = dynamicProducts.length > 0 ? dynamicProducts : PRODUCTS;
   const activeSlides = dynamicSlides.length > 0 ? dynamicSlides : introSlides;
   
-  const categories = ['Todos', 'Bienestar', 'Energía', 'Digestión', 'Piel'];
+  const categories = ['Todos', 'Bienestar', 'Energía', 'Digestión', 'Piel', 'Combos'];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -418,10 +418,10 @@ function StoreFront() {
             <img 
               src={activeSlides[currentIntroSlide]?.image_url || activeSlides[currentIntroSlide]?.image} 
               alt="Background" 
-              className="h-full w-full object-cover opacity-60"
+              className="h-full w-full object-cover opacity-80"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/5 to-black/30" />
           </motion.div>
         </AnimatePresence>
 
@@ -625,9 +625,14 @@ function StoreFront() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.4 }}
-                    className="group relative flex flex-col bg-white border border-slate-50 transition-all hover:border-slate-200"
+                    className={`group relative flex flex-col bg-white border ${product.category === 'Combos' ? 'border-amber-400 border-2' : 'border-slate-50'} transition-all hover:border-slate-200`}
                   >
-                    {product.tag && (
+                    {product.category === 'Combos' && (
+                      <div className="absolute left-4 top-4 z-10 rounded-full bg-amber-500 px-4 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-white">
+                        COMBO
+                      </div>
+                    )}
+                    {product.tag && product.category !== 'Combos' && (
                       <div className="absolute left-4 top-4 z-10 rounded-full bg-black px-4 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-white">
                         {product.tag}
                       </div>

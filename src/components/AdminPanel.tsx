@@ -599,6 +599,26 @@ export default function AdminPanel() {
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
                     </div>
+                    <div className="col-span-2 flex items-center gap-4">
+                      <input 
+                        type="checkbox" 
+                        checked={editForm.is_combo || false}
+                        onChange={e => setEditForm({...editForm, is_combo: e.target.checked})}
+                        className="h-5 w-5 rounded border-slate-300 text-black focus:ring-black"
+                      />
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">¿Es un Combo?</label>
+                    </div>
+                    {editForm.is_combo && (
+                      <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">IDs de productos del combo (separados por coma)</label>
+                        <input 
+                          type="text" 
+                          value={editForm.combo_product_ids?.join(', ') || ''} 
+                          onChange={e => setEditForm({...editForm, combo_product_ids: e.target.value.split(',').map(s => s.trim())})}
+                          className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                        />
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Precio (S/)</label>
                       <input 
