@@ -49,14 +49,20 @@ export default function AdminPanel() {
 
   async function fetchData() {
     setLoading(true);
-    const { data: productsData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-    const { data: slidesData } = await supabase.from('slides').select('*').order('order_index', { ascending: true });
-    const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
-    
-    if (productsData) setProducts(productsData);
-    if (slidesData) setSlides(slidesData);
-    if (settingsData) setSettings(settingsData.value);
-    setLoading(false);
+    try {
+      const { data: productsData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      const { data: slidesData } = await supabase.from('slides').select('*').order('order_index', { ascending: true });
+      const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
+      
+      if (productsData) setProducts(productsData);
+      if (slidesData) setSlides(slidesData);
+      if (settingsData) setSettings(settingsData.value);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setStatus({ type: 'error', message: 'Error al cargar datos' });
+    } finally {
+      setLoading(false);
+    }
   }
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
