@@ -9,6 +9,14 @@ export interface Offer {
   combo_product_ids?: string[];
 }
 
+export interface ProductVariant {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  sku?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -33,11 +41,13 @@ export interface Product {
   };
   is_combo?: boolean;
   combo_product_ids?: string[];
+  variants?: ProductVariant[];
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedVariant?: ProductVariant;
 }
 
 export interface Testimonial {

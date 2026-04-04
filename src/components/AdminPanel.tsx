@@ -483,6 +483,7 @@ export default function AdminPanel() {
                   stock: 0,
                   benefits: [],
                   usage: '',
+                  variants: [],
                   nutritional_info: { servingSize: '', servingsPerContainer: '', energy: '' }
                 } : activeTab === 'offers' ? {
                   title: '',
@@ -869,7 +870,7 @@ export default function AdminPanel() {
                       </div>
                     )}
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Precio (S/)</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Precio Base (S/)</label>
                       <input 
                         type="number" 
                         value={editForm.price} 
@@ -885,6 +886,74 @@ export default function AdminPanel() {
                         onChange={e => setEditForm({...editForm, category: e.target.value})}
                         className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
                       />
+                    </div>
+
+                    {/* Variants Section */}
+                    <div className="col-span-2 space-y-4 pt-4 border-t border-slate-100">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Variantes (Unidad, Pack de 2, etc.)</label>
+                        <button 
+                          onClick={() => setEditForm({...editForm, variants: [...(editForm.variants || []), { id: crypto.randomUUID(), name: '', price: 0 }]})}
+                          className="text-[9px] font-black text-emerald-600 hover:underline"
+                        >
+                          + AÑADIR VARIANTE
+                        </button>
+                      </div>
+                      <div className="space-y-3">
+                        {(editForm.variants || []).map((variant: any, idx: number) => (
+                          <div key={variant.id || idx} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100 relative group">
+                            <div className="space-y-1">
+                              <label className="text-[8px] font-black text-slate-400 uppercase">Nombre</label>
+                              <input 
+                                type="text" 
+                                value={variant.name} 
+                                onChange={e => {
+                                  const newVariants = [...editForm.variants];
+                                  newVariants[idx] = { ...variant, name: e.target.value };
+                                  setEditForm({...editForm, variants: newVariants});
+                                }}
+                                placeholder="Ej: Pack de 2"
+                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium focus:border-black focus:outline-none"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[8px] font-black text-slate-400 uppercase">Precio (S/)</label>
+                              <input 
+                                type="number" 
+                                value={variant.price} 
+                                onChange={e => {
+                                  const newVariants = [...editForm.variants];
+                                  newVariants[idx] = { ...variant, price: parseFloat(e.target.value) };
+                                  setEditForm({...editForm, variants: newVariants});
+                                }}
+                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium focus:border-black focus:outline-none"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-[8px] font-black text-slate-400 uppercase">Precio Original (S/)</label>
+                              <input 
+                                type="number" 
+                                value={variant.originalPrice || ''} 
+                                onChange={e => {
+                                  const newVariants = [...editForm.variants];
+                                  newVariants[idx] = { ...variant, originalPrice: parseFloat(e.target.value) };
+                                  setEditForm({...editForm, variants: newVariants});
+                                }}
+                                className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium focus:border-black focus:outline-none"
+                              />
+                            </div>
+                            <button 
+                              onClick={() => {
+                                const newVariants = editForm.variants.filter((_: any, i: number) => i !== idx);
+                                setEditForm({...editForm, variants: newVariants});
+                              }}
+                              className="absolute -right-2 -top-2 p-1.5 bg-white border border-slate-200 rounded-full text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Stock</label>
