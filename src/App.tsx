@@ -1167,7 +1167,7 @@ function StoreFront() {
       </section>
 
       {/* Footer (Flora y Fauna Style) */}
-      <footer className="bg-black py-16 text-white">
+      <footer className="bg-black py-8 text-white">
         <div className="mx-auto max-w-7xl px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {/* Logo & Description */}
@@ -1399,7 +1399,7 @@ function StoreFront() {
                     )}
                   </div>
 
-                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8 whitespace-pre-line">
                     {selectedProduct.description || "Fórmula natural premium diseñada para mejorar tu calidad de vida y bienestar general."}
                   </p>
 
