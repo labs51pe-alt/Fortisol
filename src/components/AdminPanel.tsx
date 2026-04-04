@@ -197,6 +197,7 @@ export default function AdminPanel() {
   const handleSaveProduct = async (product: Partial<Product>) => {
     // Clean up combo_product_ids if not a combo
     const dataToSave = { ...product };
+    delete dataToSave.variants; // Remove variants as it does not exist in the database
     if (!dataToSave.is_combo) {
       dataToSave.combo_product_ids = [];
     } else if (dataToSave.combo_product_ids && Array.isArray(dataToSave.combo_product_ids)) {
