@@ -116,16 +116,19 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
   }
 
   return (
-    <div className={`${isEmbedded ? '' : 'min-h-screen bg-slate-50'} font-sans text-slate-900`}>
+    <div className={`${isEmbedded ? '' : 'min-h-screen bg-slate-50'} font-display text-black`}>
       {/* Header */}
       {!isEmbedded && (
-        <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-4">
-              <a href="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black transition-colors hover:bg-black hover:text-white">
+        <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/80 backdrop-blur-md">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+            <div className="flex items-center gap-6">
+              <a href="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 text-black transition-all hover:bg-black hover:text-white">
                 <ArrowLeft size={20} />
               </a>
-              <h1 className="text-xl font-black tracking-tight">CRM <span className="text-slate-400 font-medium">FORTISOL</span></h1>
+              <div>
+                <h1 className="text-2xl font-black tracking-tighter uppercase">CRM <span className="text-slate-300">FORTISOL</span></h1>
+                <p className="text-[8px] font-bold tracking-[0.4em] text-slate-400 uppercase mt-1">Gestión de Clientes y Pedidos</p>
+              </div>
             </div>
             <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-full">
               <button 
@@ -194,14 +197,14 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
                   placeholder={activeTab === 'orders' ? "Buscar pedido..." : "Buscar cliente..."} 
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className="w-full sm:w-64 rounded-full border border-slate-200 bg-slate-100 py-2 pl-12 pr-6 text-xs font-medium focus:border-black focus:outline-none transition-all"
+                  className="w-full sm:w-64 rounded-full border border-slate-200 bg-slate-100 py-2 pl-12 pr-6 text-xs font-display font-medium focus:border-emerald-600 focus:bg-white focus:outline-none transition-all"
                 />
               </div>
               {activeTab === 'orders' && (
                 <select 
                   value={filterStatus}
                   onChange={e => setFilterStatus(e.target.value)}
-                  className="rounded-full border border-slate-200 bg-slate-100 px-6 py-2 text-xs font-black uppercase tracking-widest focus:border-black focus:outline-none"
+                  className="rounded-full border border-slate-200 bg-slate-100 px-6 py-2 text-xs font-display font-black uppercase tracking-widest focus:border-emerald-600 focus:bg-white focus:outline-none"
                 >
                   <option value="all">ESTADOS</option>
                   {Object.entries(statusConfig).map(([key, { label }]) => (
@@ -217,11 +220,11 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-50 bg-slate-50/50">
-                  <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Cliente</th>
-                  <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Fecha</th>
-                  <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Total</th>
-                  <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Estado</th>
-                  <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Acciones</th>
+                  <th className="px-8 py-6 text-[10px] font-display font-black uppercase tracking-[0.2em] text-slate-400">Cliente</th>
+                  <th className="px-8 py-6 text-[10px] font-display font-black uppercase tracking-[0.2em] text-slate-400">Fecha</th>
+                  <th className="px-8 py-6 text-[10px] font-display font-black uppercase tracking-[0.2em] text-slate-400">Total</th>
+                  <th className="px-8 py-6 text-[10px] font-display font-black uppercase tracking-[0.2em] text-slate-400">Estado</th>
+                  <th className="px-8 py-6 text-[10px] font-display font-black uppercase tracking-[0.2em] text-slate-400">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -232,25 +235,25 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
                       <tr key={order.id} className="group hover:bg-slate-50/50 transition-colors">
                         <td className="px-8 py-6">
                           <div className="flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black font-black text-xs">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black font-display font-black text-xs">
                               {order.customer_name.charAt(0)}
                             </div>
                             <div>
-                              <p className="text-sm font-black text-black">{order.customer_name}</p>
-                              <p className="text-xs font-medium text-slate-500">{order.customer_phone}</p>
+                              <p className="text-sm font-display font-black text-black">{order.customer_name}</p>
+                              <p className="text-xs font-display font-medium text-slate-500">{order.customer_phone}</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-8 py-6">
-                          <p className="text-xs font-medium text-slate-500">
+                          <p className="text-xs font-display font-medium text-slate-500">
                             {new Date(order.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </td>
                         <td className="px-8 py-6">
-                          <p className="text-sm font-black text-black">S/ {order.total}</p>
+                          <p className="text-sm font-display font-black text-black">S/ {order.total}</p>
                         </td>
                         <td className="px-8 py-6">
-                          <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-widest ${statusConfig[order.status].color}`}>
+                          <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[9px] font-display font-black uppercase tracking-widest ${statusConfig[order.status].color}`}>
                             <StatusIcon size={10} />
                             {statusConfig[order.status].label}
                           </span>
@@ -258,7 +261,7 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
                         <td className="px-8 py-6">
                           <button 
                             onClick={() => setSelectedOrder(order)}
-                            className="flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-[9px] font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-all"
+                            className="flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 text-[9px] font-display font-black uppercase tracking-widest text-black hover:bg-black hover:text-white transition-all"
                           >
                             <Eye size={12} /> Detalles
                           </button>
@@ -298,26 +301,26 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
                     <tr key={idx} className="group hover:bg-slate-50/50 transition-colors">
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black font-black text-xs">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black font-display font-black text-xs">
                             {customer.name.charAt(0)}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-black">{customer.name}</p>
-                            <p className="text-xs font-medium text-slate-500">{customer.phone}</p>
+                            <p className="text-sm font-display font-black text-black uppercase tracking-tight">{customer.name}</p>
+                            <p className="text-xs font-display font-medium text-slate-500 uppercase tracking-widest">{customer.phone}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-6">
-                        <p className="text-xs font-medium text-slate-500">{customer.location}</p>
+                        <p className="text-xs font-display font-medium text-slate-500 uppercase tracking-widest">{customer.location}</p>
                       </td>
                       <td className="px-8 py-6">
-                        <p className="text-sm font-black text-black">{customer.orderCount}</p>
+                        <p className="text-sm font-display font-black text-black">{customer.orderCount}</p>
                       </td>
                       <td className="px-8 py-6">
-                        <p className="text-sm font-black text-black">S/ {customer.totalSpent.toFixed(2)}</p>
+                        <p className="text-sm font-display font-black text-black">S/ {customer.totalSpent.toFixed(2)}</p>
                       </td>
                       <td className="px-8 py-6">
-                        <p className="text-xs font-medium text-slate-500">
+                        <p className="text-xs font-display font-medium text-slate-500 uppercase tracking-widest">
                           {new Date(customer.lastOrderDate).toLocaleDateString('es-PE', { day: '2-digit', month: 'short' })}
                         </p>
                       </td>
@@ -348,8 +351,8 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
           <div className="relative h-full w-full max-w-xl overflow-hidden rounded-[2.5rem] bg-white shadow-2xl flex flex-col">
             <div className="flex items-center justify-between border-b border-slate-100 p-8">
               <div>
-                <h3 className="text-xl font-black tracking-tight uppercase">Detalle del Pedido</h3>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">ID: {selectedOrder.id.slice(0, 8)}</p>
+                <h3 className="text-xl font-display font-black tracking-tight uppercase">Detalle del Pedido</h3>
+                <p className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400 mt-1">ID: {selectedOrder.id.slice(0, 8)}</p>
               </div>
               <button onClick={() => setSelectedOrder(null)} className="rounded-full bg-slate-100 p-2 text-slate-400 hover:text-black transition-colors">
                 <X size={20} />
@@ -359,13 +362,13 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
             <div className="flex-1 overflow-y-auto p-8 space-y-8">
               {/* Status Update */}
               <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Actualizar Estado</label>
+                <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400">Actualizar Estado</label>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {Object.entries(statusConfig).map(([key, { label, color }]) => (
                     <button 
                       key={key}
                       onClick={() => updateOrderStatus(selectedOrder.id, key as Order['status'])}
-                      className={`rounded-2xl border p-3 text-[9px] font-black uppercase tracking-widest transition-all ${selectedOrder.status === key ? color : 'bg-white border-slate-100 text-slate-400 hover:border-black hover:text-black'}`}
+                      className={`rounded-2xl border p-3 text-[9px] font-display font-black uppercase tracking-widest transition-all ${selectedOrder.status === key ? color : 'bg-white border-slate-100 text-slate-400 hover:border-black hover:text-black'}`}
                     >
                       {label}
                     </button>
@@ -376,25 +379,25 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
               {/* Customer Info */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><User size={12} /> Cliente</label>
-                  <p className="text-sm font-black">{selectedOrder.customer_name}</p>
+                  <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><User size={12} /> Cliente</label>
+                  <p className="text-sm font-display font-black uppercase tracking-tight">{selectedOrder.customer_name}</p>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Phone size={12} /> Teléfono</label>
-                  <p className="text-sm font-black">{selectedOrder.customer_phone}</p>
+                  <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Phone size={12} /> Teléfono</label>
+                  <p className="text-sm font-display font-black uppercase tracking-widest">{selectedOrder.customer_phone}</p>
                 </div>
                 <div className="col-span-2 space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><MapPin size={12} /> Ubicación</label>
-                  <p className="text-sm font-black">{selectedOrder.district}, {selectedOrder.province}, {selectedOrder.department}</p>
+                  <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><MapPin size={12} /> Ubicación</label>
+                  <p className="text-sm font-display font-black uppercase tracking-tight">{selectedOrder.district}, {selectedOrder.province}, {selectedOrder.department}</p>
                   {selectedOrder.customer_address && (
-                    <p className="text-xs font-medium text-slate-500 mt-1">{selectedOrder.customer_address}</p>
+                    <p className="text-xs font-display font-medium text-slate-500 uppercase tracking-widest mt-1">{selectedOrder.customer_address}</p>
                   )}
                 </div>
               </div>
 
               {/* Items */}
               <div className="space-y-4">
-                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Package size={12} /> Productos</label>
+                <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><Package size={12} /> Productos</label>
                 <div className="space-y-3">
                   {selectedOrder.items.map((item: any, idx: number) => (
                     <div key={idx} className="flex items-center justify-between rounded-2xl bg-slate-50 p-4">
@@ -403,11 +406,11 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
                           <img src={item.product.image_url} alt={item.product.name} className="h-full w-full object-contain" />
                         </div>
                         <div>
-                          <p className="text-xs font-black">{item.product.name}</p>
-                          <p className="text-[10px] font-medium text-slate-500">Cantidad: {item.quantity}</p>
+                          <p className="text-xs font-display font-black uppercase tracking-tight">{item.product.name}</p>
+                          <p className="text-[10px] font-display font-medium text-slate-500 uppercase tracking-widest">Cantidad: {item.quantity}</p>
                         </div>
                       </div>
-                      <p className="text-xs font-black">S/ {item.product.price * item.quantity}</p>
+                      <p className="text-xs font-display font-black">S/ {item.product.price * item.quantity}</p>
                     </div>
                   ))}
                 </div>
@@ -416,7 +419,7 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
               {/* Payment Proof */}
               {selectedOrder.payment_proof_url && (
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><CreditCard size={12} /> Comprobante de Pago</label>
+                  <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400 flex items-center gap-2"><CreditCard size={12} /> Comprobante de Pago</label>
                   <a 
                     href={selectedOrder.payment_proof_url} 
                     target="_blank" 
@@ -434,8 +437,8 @@ export default function CRM({ isEmbedded = false }: { isEmbedded?: boolean }) {
 
             <div className="border-t border-slate-100 p-8 bg-slate-50/50">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total del Pedido</span>
-                <span className="text-2xl font-black text-black">S/ {selectedOrder.total}</span>
+                <span className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400">Total del Pedido</span>
+                <span className="text-2xl font-display font-black text-black">S/ {selectedOrder.total}</span>
               </div>
             </div>
           </div>

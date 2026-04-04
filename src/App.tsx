@@ -46,6 +46,7 @@ import {
   Bot,
   Send,
   Loader2,
+  Package,
   Sun,
   Sparkles,
   Smartphone
@@ -227,8 +228,35 @@ function StoreFront() {
     fetchDynamicData();
   }, []);
 
-  // Fallback slides removed as requested by user to avoid showing demo data
-  const introSlides: any[] = [];
+  const introSlides = [
+    {
+      id: 1,
+      title_left: "Glicinato de MAGNESIO",
+      title_right: "RELAJACIÓN Y CALIDAD DEL SUEÑO",
+      description: "Es un suplemento altamente absorbible que combina magnesio con el aminoácido glicina",
+      price: 139.90,
+      old_price: 159.90,
+      image_url: "https://picsum.photos/seed/magnesio/800/800",
+      bg_color: "bg-emerald-600"
+    },
+    {
+      id: 2,
+      title_left: "Omega-3 Premium",
+      title_right: "SALUD CARDIOVASCULAR",
+      description: "Grasas esenciales de alta pureza para fortalecer tu corazón y cerebro.",
+      price: 192.00,
+      old_price: 240.00,
+      image_url: "https://picsum.photos/seed/omega/800/800",
+      bg_color: "bg-emerald-800"
+    }
+  ];
+
+  const categoriesGrid = [
+    { name: "TODOS", image: "https://picsum.photos/seed/todos/600/800" },
+    { name: "NUTRACÉUTICOS", image: "https://picsum.photos/seed/nutra/600/800" },
+    { name: "ACEITES", image: "https://picsum.photos/seed/aceites/600/800" },
+    { name: "OFERTAS", image: "https://picsum.photos/seed/ofertas/600/800" }
+  ];
 
   async function fetchDynamicData() {
     setIsLoadingData(true);
@@ -239,10 +267,10 @@ function StoreFront() {
     const { data: settingsData } = await supabase.from('settings').select('*').eq('key', 'company_info').single();
     
     if (pData && pData.length > 0) setDynamicProducts(pData);
-    else setDynamicProducts([]); // No fallback to demo data
+    else setDynamicProducts(PRODUCTS); 
 
     if (sData && sData.length > 0) setDynamicSlides(sData);
-    else setDynamicSlides([]); // No fallback to demo data
+    else setDynamicSlides([]); 
 
     if (tData && tData.length > 0) setDynamicTestimonials(tData);
     else setDynamicTestimonials([]);
@@ -260,7 +288,7 @@ function StoreFront() {
   const activeProducts = dynamicProducts;
   const activeSlides = dynamicSlides.length > 0 ? dynamicSlides : introSlides;
   
-  const categories = ['Todos', 'Bienestar', 'Energía', 'Digestión', 'Piel', 'Combos'];
+  const categories = ['Todos', 'Nutracéuticos', 'Aceites', 'Ofertas'];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -275,14 +303,13 @@ function StoreFront() {
   }, []);
 
   useEffect(() => {
-    // Automatic promo popup disabled as it contained demo data
-    /*
     const timer = setTimeout(() => {
-      setIsPromoOpen(true);
-    }, 4000);
+      if (popupOffers.length > 0 || settings?.promo_enabled) {
+        setIsPromoOpen(true);
+      }
+    }, 500);
     return () => clearTimeout(timer);
-    */
-  }, []);
+  }, [popupOffers, settings]);
 
   useEffect(() => {
     if (activeSlides.length <= 1) return;
@@ -427,14 +454,14 @@ function StoreFront() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-black selection:text-white">
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${scrolled ? 'bg-white/95 py-2 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] backdrop-blur-md border-b border-slate-100' : 'bg-transparent py-4'}`}>
+      <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-white py-4 border-b border-slate-100">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <div className="flex flex-col leading-none">
-              <span className={`text-xl font-black tracking-tighter flex items-center gap-1 transition-colors duration-500 ${scrolled ? 'text-black' : 'text-white'}`}>
+              <span className="text-xl font-display font-black tracking-tighter flex items-center gap-1 text-black">
                 FORTISOL<span className="text-[9px] align-top">®</span>
               </span>
-              <span className={`text-[7px] font-bold tracking-[0.2em] uppercase transition-colors duration-500 ${scrolled ? 'text-slate-400' : 'text-white/60'}`}>
+              <span className="text-[7px] font-display font-bold tracking-[0.2em] uppercase text-slate-400">
                 Salud para toda la vida
               </span>
             </div>
@@ -443,17 +470,17 @@ function StoreFront() {
           {/* Desktop Menu */}
           <div className="hidden items-center gap-8 md:flex">
             {[
-              { label: 'Inicio', href: '#inicio' },
-              { label: 'Catálogo', href: '#productos' },
-              { label: 'Testimonios', href: '#testimonios' }
+              { label: 'INICIO', href: '#inicio' },
+              { label: 'PRODUCTOS', href: '#productos' },
+              { label: 'TESTIMONIOS', href: '#testimonios' }
             ].map((item) => (
               <a 
                 key={item.label}
                 href={item.href} 
-                className={`group relative text-[10px] font-black uppercase tracking-[0.2em] transition-colors duration-500 ${scrolled ? 'text-black/60 hover:text-black' : 'text-white/70 hover:text-white'}`}
+                className="group relative text-[10px] font-display font-bold uppercase tracking-[0.2em] text-black/60 hover:text-black transition-colors"
               >
                 {item.label}
-                <span className={`absolute -bottom-1 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full ${scrolled ? 'bg-black' : 'bg-white'}`} />
+                <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-black transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
           </div>
@@ -461,24 +488,24 @@ function StoreFront() {
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsCartOpen(true)}
-              className={`relative p-2 transition-all hover:scale-110 ${scrolled ? 'text-black' : 'text-white'}`}
+              className="relative p-2 transition-all hover:scale-110 text-black"
             >
               <ShoppingCart size={18} />
               {cart.length > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-600 text-[7px] font-bold text-white">
+                <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-black text-[7px] font-bold text-white">
                   {cart.length}
                 </span>
               )}
             </button>
             <button 
               onClick={() => handleWhatsAppOrder()}
-              className={`hidden items-center gap-2 rounded-full px-6 py-2.5 text-[10px] font-black transition-all uppercase tracking-widest md:flex shadow-lg hover:scale-105 active:scale-95 ${scrolled ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/20' : 'bg-white text-black hover:bg-slate-100 shadow-white/20'}`}
+              className="hidden items-center gap-2 rounded-full px-6 py-2.5 text-[10px] font-black transition-all uppercase tracking-widest md:flex bg-black text-white hover:bg-slate-900 shadow-sm hover:scale-105 active:scale-95"
             >
               <MessageCircle size={14} />
               CONTACTAR
             </button>
             {/* Mobile Menu Toggle */}
-            <button className={`md:hidden ${scrolled ? 'text-black' : 'text-white'}`} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button className="md:hidden text-black" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -504,7 +531,7 @@ function StoreFront() {
               className="fixed bottom-0 right-0 top-0 z-[70] flex w-full max-w-xs flex-col bg-white p-10 md:hidden shadow-2xl"
             >
               <div className="flex items-center justify-between mb-12">
-                <span className="text-xl font-black tracking-tighter">FORTISOL</span>
+                <span className="text-xl font-display font-black tracking-tighter uppercase">FORTISOL</span>
                 <button onClick={() => setIsMenuOpen(false)} className="text-slate-400 hover:text-black transition-colors">
                   <X size={24} />
                 </button>
@@ -523,7 +550,7 @@ function StoreFront() {
                     transition={{ delay: 0.1 + (i * 0.1) }}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="text-2xl font-black uppercase tracking-tight text-black hover:text-slate-500 transition-colors"
+                    className="text-2xl font-display font-black uppercase tracking-tight text-black hover:text-slate-500 transition-colors"
                   >
                     {item.label}
                   </motion.a>
@@ -533,7 +560,7 @@ function StoreFront() {
               <div className="mt-auto space-y-8">
                 <button 
                   onClick={() => { handleWhatsAppOrder(); setIsMenuOpen(false); }}
-                  className="flex w-full items-center justify-center gap-3 rounded-full bg-emerald-600 py-5 text-xs font-black text-white shadow-xl shadow-emerald-200 uppercase tracking-widest"
+                  className="flex w-full items-center justify-center gap-3 rounded-full bg-emerald-600 py-5 text-xs font-display font-black text-white shadow-xl shadow-emerald-200 uppercase tracking-widest"
                 >
                   <MessageCircle size={20} />
                   WHATSAPP DIRECTO
@@ -563,135 +590,55 @@ function StoreFront() {
       </AnimatePresence>
 
       {/* Hero Slider (Organa Style) */}
-      <section id="inicio" className="relative h-[70vh] min-h-[500px] w-full overflow-hidden bg-black pt-16">
-        {/* Background Slider */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentIntroSlide}
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            className="absolute inset-0 z-0"
-          >
-            <img 
-              src={activeSlides[currentIntroSlide]?.image_url || activeSlides[currentIntroSlide]?.image} 
-              alt="Background" 
-              className="h-full w-full object-cover opacity-100"
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/70" />
-          </motion.div>
-        </AnimatePresence>
+      <div className="pt-24 bg-white relative overflow-hidden">
+        <div className="relative h-[500px] md:h-[600px] w-full">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIntroSlide}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 flex items-center justify-center overflow-hidden"
+            >
+              {/* Full Background Image */}
+              <img
+                src={activeSlides[currentIntroSlide]?.image_url || "https://picsum.photos/seed/magnesio/800/800"}
+                alt="Product Slide"
+                className="absolute inset-0 h-full w-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+              {/* Dark Overlay for Premium Look */}
+              <div className="absolute inset-0 bg-black/40" />
 
-        <div className="container relative z-10 mx-auto max-w-7xl px-6 h-full flex flex-col items-center justify-center">
-          {activeSlides.length > 0 ? (
-            <div className="flex flex-col items-center justify-center text-center w-full">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIntroSlide}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  className="flex flex-col items-center"
-                >
-                  {/* Badge */}
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/20 backdrop-blur-md px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white border border-white/30 shadow-lg"
-                  >
-                    <div className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                    {activeSlides[currentIntroSlide]?.badge || 'FORTISOL PERÚ'}
-                  </motion.div>
-
-                  {/* Title & Subtitle */}
-                  <div className="mb-4 flex flex-col items-center">
-                    <h2 className="text-xs font-black uppercase tracking-[0.4em] text-white mb-3 drop-shadow-lg">
-                      {activeSlides[currentIntroSlide]?.subtitle}
-                    </h2>
-                    <h1 className="text-5xl font-black tracking-tight text-white md:text-7xl lg:text-[7.5rem] drop-shadow-[0_15px_40px_rgba(0,0,0,0.7)] max-w-6xl leading-[0.9] uppercase text-center">
-                      {activeSlides[currentIntroSlide]?.title}
-                    </h1>
-                  </div>
-
-                  {/* Description */}
-                  <p className="mb-10 max-w-2xl text-sm font-bold text-white/90 md:text-lg leading-relaxed drop-shadow-[0_4px_15px_rgba(0,0,0,0.9)] text-center">
-                    {activeSlides[currentIntroSlide]?.description}
-                  </p>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Controls & CTAs */}
-              <div className="flex flex-col items-center gap-6 w-full">
-                {/* Buttons */}
-                <div className="flex flex-col gap-4 sm:flex-row">
-                  <button 
-                    onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="flex items-center justify-center gap-3 rounded-full bg-white px-8 py-4 text-[11px] font-black text-black shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all hover:bg-slate-100 hover:scale-105 active:scale-95 uppercase tracking-widest group"
-                  >
-                    ENTRAR A LA WEB
-                    <ChevronRight size={16} className="transition-transform group-hover:translate-x-1" />
-                  </button>
-                </div>
-
-                {/* Progress Dots */}
-                <div className="flex gap-2">
-                  {activeSlides.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentIntroSlide(i)}
-                      className={`h-1 rounded-full transition-all duration-500 ${currentIntroSlide === i ? 'w-8 bg-emerald-500' : 'w-2 bg-white/20'}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center text-center w-full">
-              <h1 className="text-4xl font-black tracking-tight text-white md:text-7xl uppercase">
-                FORTISOL PERÚ
-              </h1>
-              <p className="mt-4 text-white/70 text-lg uppercase tracking-widest">Salud para toda la vida</p>
+              {/* Navigation Arrows */}
               <button 
-                onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-                className="mt-8 flex items-center justify-center gap-3 rounded-full bg-white px-10 py-4 text-xs font-black text-black shadow-2xl transition-all hover:bg-slate-100 uppercase tracking-widest"
+                onClick={() => setCurrentIntroSlide(prev => (prev - 1 + activeSlides.length) % activeSlides.length)}
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors z-20"
               >
-                VER PRODUCTOS
+                <ChevronLeft size={48} strokeWidth={1} />
               </button>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Feature Cards */}
-        <div className="absolute bottom-12 left-0 right-0 px-6 hidden md:block">
-          <div className="mx-auto max-w-7xl grid grid-cols-4 gap-6 w-full">
-            {[
-              { icon: <Truck size={18} />, label: "Envío a todo Perú", sub: "Rápido y seguro" },
-              { icon: <ShieldCheck size={18} />, label: "100% Natural", sub: "Sin químicos" },
-              { icon: <Star size={18} />, label: "Calidad Premium", sub: "Garantizada" },
-              { icon: <CheckCircle2 size={18} />, label: "Soporte 24/7", sub: "Asesoría gratuita" }
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + (i * 0.1), duration: 0.8 }}
-                className="flex items-center gap-4 rounded-3xl bg-white/5 backdrop-blur-2xl p-5 border border-white/10 hover:bg-white/10 transition-colors group cursor-default"
+              <button 
+                onClick={() => setCurrentIntroSlide(prev => (prev + 1) % activeSlides.length)}
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors z-20"
               >
-                <div className="rounded-2xl bg-white/10 p-3 text-white group-hover:bg-white group-hover:text-black transition-all duration-500">
-                  {item.icon}
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-white">{item.label}</p>
-                  <p className="text-[8px] font-bold text-white/40 uppercase tracking-widest group-hover:text-white/60 transition-colors">{item.sub}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                <ChevronRight size={48} strokeWidth={1} />
+              </button>
+
+              {/* Dots */}
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+                {activeSlides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentIntroSlide(i)}
+                    className={`h-2 w-2 rounded-full transition-all ${currentIntroSlide === i ? 'bg-white w-8' : 'bg-white/30'}`}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
-      </section>
+      </div>
 
       {/* Promos Bar (Organa Style) */}
       {settings?.promo_enabled && (
@@ -701,10 +648,10 @@ function StoreFront() {
               <div key={i} className="flex items-center gap-12 mx-12">
                 <div className="flex items-center gap-4 text-white">
                   <Zap size={20} className="text-yellow-400 fill-yellow-400 animate-pulse" />
-                  <h3 className="text-3xl font-black uppercase tracking-tighter italic">{settings?.promo_title || 'OFERTAS ESPECIALES'}</h3>
+                  <h3 className="text-3xl font-display font-black uppercase tracking-tighter italic">{settings?.promo_title || 'OFERTAS ESPECIALES'}</h3>
                   <div className="h-2 w-2 rounded-full bg-white/20" />
                 </div>
-                <p className="text-[11px] font-black text-white/60 uppercase tracking-[0.3em]">
+                <p className="text-[11px] font-display font-black text-white/60 uppercase tracking-[0.3em]">
                   ¡OFERTAS EXCLUSIVAS POR TIEMPO LIMITADO!
                 </p>
                 <div className="flex items-center gap-2">
@@ -718,194 +665,227 @@ function StoreFront() {
         </div>
       )}
 
-      {/* Features */}
-      <section className="bg-white py-16 border-y border-slate-100">
-        <div className="container mx-auto max-w-7xl px-6">
-          <div className="grid gap-12 md:grid-cols-3">
+      {/* Features Section (Flora y Fauna Style) */}
+      <section className="bg-slate-50 py-16 border-y border-slate-100">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { icon: <Truck className="text-black" size={24} />, title: "Envíos a Todo el Perú", desc: "Llegamos a cada rincón del país con rapidez y seguridad." },
-              { icon: <ShieldCheck className="text-black" size={24} />, title: "Calidad Garantizada", desc: "Productos con registros sanitarios y fórmulas naturales." },
-              { icon: <CheckCircle2 className="text-black" size={24} />, title: "Pago Contra Entrega", desc: "Paga al recibir tu pedido en las principales ciudades." }
+              { icon: Truck, title: 'Envíos a Todo el Perú', desc: 'Rápido y seguro a tu puerta.' },
+              { icon: ShieldCheck, title: 'Calidad Garantizada', desc: 'Productos 100% naturales.' },
+              { icon: CheckCircle2, title: 'Pago Seguro', desc: 'Múltiples métodos de pago.' }
             ].map((feature, i) => (
-              <motion.div 
+              <div key={i} className="flex items-center gap-4 group">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-black shadow-sm transition-all group-hover:bg-black group-hover:text-white">
+                  <feature.icon size={20} />
+                </div>
+                <div>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-black">{feature.title}</h3>
+                  <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Grid (Organa Style) */}
+      <section className="py-24 bg-white">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {categoriesGrid.map((cat, i) => (
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.2 }}
-                className="flex flex-col items-center text-center group"
+                transition={{ delay: i * 0.1 }}
+                className="relative aspect-[3/4] rounded-[2rem] overflow-hidden group cursor-pointer"
+                onClick={() => {
+                  setSelectedCategory(cat.name === "TODOS" ? "Todos" : cat.name.charAt(0).toUpperCase() + cat.name.slice(1).toLowerCase());
+                  document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
-                <div className="mb-5 rounded-full bg-slate-50 p-5 transition-all group-hover:bg-black group-hover:text-white">{feature.icon}</div>
-                <h3 className="mb-2 text-base font-black uppercase tracking-wider">{feature.title}</h3>
-                <p className="text-xs leading-relaxed text-slate-500 font-medium">{feature.desc}</p>
+                <img 
+                  src={cat.image} 
+                  alt={cat.name} 
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[80%]">
+                  <button className="w-full bg-white/90 backdrop-blur-md text-black py-4 rounded-full text-xs font-black uppercase tracking-widest shadow-xl hover:bg-white transition-colors">
+                    {cat.name}
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Catalog Section */}
-      <section id="productos" className="bg-[#FAFAFA] py-20">
-        <div className="container mx-auto max-w-7xl px-6">
-          <div className="mb-16 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-slate-50 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-              NUESTRA COLECCIÓN
-            </div>
-            <h2 className="mb-6 text-4xl font-black text-black md:text-6xl uppercase tracking-tighter">Catálogo de Productos</h2>
-            <p className="mx-auto max-w-2xl text-base text-slate-500 font-medium leading-relaxed">
-              Descubre nuestra selección premium de productos naturales. Calidad garantizada para tu bienestar diario.
-            </p>
+      {/* Main Content (Flora y Fauna Style) */}
+      <section id="productos" className="bg-white py-12">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex flex-col lg:flex-row gap-12">
             
-            {/* Category Filter */}
-            <div className="mt-12 flex flex-wrap justify-center gap-3">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`relative rounded-full px-8 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
-                    selectedCategory === cat 
-                      ? 'bg-emerald-600 text-white shadow-[0_10px_30px_-5px_rgba(16,185,129,0.3)] scale-105' 
-                      : 'bg-white text-slate-400 border border-slate-100 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50'
-                  }`}
-                >
-                  {cat}
-                  {selectedCategory === cat && (
-                    <motion.div 
-                      layoutId="activeTab"
-                      className="absolute inset-0 rounded-full bg-emerald-600 -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
+            {/* Sidebar Filters (Desktop) - Hidden as requested */}
+            <aside className="hidden">
+              <div className="sticky top-32">
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-black mb-8 border-b border-slate-100 pb-4">
+                  Categorías
+                </h3>
+                <div className="flex flex-col gap-4">
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`text-left text-xs font-bold uppercase tracking-widest transition-all hover:translate-x-2 ${
+                        selectedCategory === category ? 'text-emerald-600' : 'text-slate-400 hover:text-black'
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
 
-          <motion.div 
-            layout
-            className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-          >
-            <AnimatePresence mode='popLayout'>
-              {activeProducts
-                .filter((p) => selectedCategory === 'Todos' || p.category === selectedCategory)
-                .map((product) => (
-                  <motion.div
-                    layout
-                    key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                    className={`group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden transition-all duration-500 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)] ${
-                      product.category === 'Combos' ? 'ring-2 ring-amber-400/30' : 'ring-1 ring-slate-100 hover:ring-slate-200'
-                    }`}
-                  >
-                    {/* Badges */}
-                    <div className="absolute left-6 top-6 z-20 flex flex-col gap-2">
-                      {product.category === 'Combos' && (
-                        <div className="rounded-full bg-amber-500 px-4 py-1.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg shadow-amber-500/20">
-                          COMBO ESPECIAL
-                        </div>
-                      )}
-                      {product.tag && product.category !== 'Combos' && (
-                        <div className="rounded-full bg-emerald-600 px-4 py-1.5 text-[8px] font-black uppercase tracking-widest text-white shadow-lg shadow-emerald-600/20">
-                          {product.tag}
-                        </div>
-                      )}
-                    </div>
+                <div className="mt-16 p-8 rounded-3xl bg-slate-50 border border-slate-100">
+                  <Leaf className="text-emerald-600 mb-4" size={24} />
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-black mb-2">100% Natural</h4>
+                  <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+                    Todos nuestros productos son seleccionados cuidadosamente para garantizar la máxima pureza.
+                  </p>
+                </div>
+              </div>
+            </aside>
 
-                    {/* Image Section */}
-                    <div className="aspect-square overflow-hidden bg-slate-50 relative">
-                      <img 
-                        src={product.image_url || product.image} 
-                        alt={product.name} 
-                        className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                        referrerPolicy="no-referrer"
-                      />
-                      
-                      {/* Quick Add Overlay */}
-                      <div className="absolute inset-x-0 bottom-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-30">
-                        <div className="flex flex-col gap-3">
+            {/* Product Grid & Sorting */}
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-12">
+                  <div className="flex flex-col">
+                    <h2 className="text-2xl font-display font-black text-black uppercase tracking-tighter">
+                      {selectedCategory === 'Todos' ? 'Nuestros Productos' : selectedCategory}
+                    </h2>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                      {isLoadingData ? 'Cargando...' : `Mostrando ${filteredProducts.length} resultados`}
+                    </p>
+                  </div>
+
+                  {/* Mobile Category Toggle */}
+                  <div className="lg:hidden">
+                    <select 
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-widest focus:outline-none"
+                    >
+                      {categories.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {isLoadingData ? (
+                  <div className="flex flex-col items-center justify-center py-32 text-slate-300">
+                    <Loader2 className="animate-spin mb-4" size={48} />
+                    <p className="text-[10px] font-black uppercase tracking-widest">Cargando productos...</p>
+                  </div>
+                ) : filteredProducts.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-16">
+                    {filteredProducts.map((product) => (
+                      <motion.div
+                        key={product.id}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="group flex flex-col"
+                      >
+                        {/* Image Container */}
+                        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-slate-100 mb-4">
+                          <img
+                            src={product.image_url || product.image}
+                            alt={product.name}
+                            className="h-full w-full object-contain p-6 transition-transform duration-700 group-hover:scale-110"
+                            referrerPolicy="no-referrer"
+                          />
+                          
+                          {/* Floating Actions */}
+                          <div className="absolute right-4 top-4 flex flex-col gap-2 translate-x-12 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleWishlist(product.id);
+                              }}
+                              className={`flex h-10 w-10 items-center justify-center rounded-full shadow-xl transition-all hover:scale-110 ${wishlist.includes(product.id) ? 'bg-red-500 text-white' : 'bg-white text-black'}`}
+                            >
+                              <Heart size={18} fill={wishlist.includes(product.id) ? "currentColor" : "none"} />
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShareProduct(product);
+                              }}
+                              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-black shadow-xl transition-all hover:scale-110"
+                            >
+                              <Share2 size={18} />
+                            </button>
+                          </div>
+
+                          {/* Quick View Button */}
                           <button 
                             onClick={() => setSelectedProduct(product)}
-                            className="w-full rounded-2xl bg-white/90 backdrop-blur-xl py-4 text-[10px] font-black uppercase tracking-[0.2em] text-black shadow-2xl hover:bg-black hover:text-white transition-all duration-300 transform hover:scale-[1.02] active:scale-95"
+                            className="absolute bottom-4 left-4 right-4 translate-y-12 rounded-2xl bg-black/80 py-4 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-md transition-all duration-300 group-hover:translate-y-0"
                           >
-                            DETALLES
+                            Vista Rápida
                           </button>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart(product);
-                            }}
-                            className="w-full rounded-2xl bg-emerald-600 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-2xl hover:bg-emerald-700 transition-all duration-300 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2"
-                          >
-                            <ShoppingCart size={14} />
-                            AÑADIR AL CARRITO
-                          </button>
-                        </div>
-                      </div>
 
-                      {/* Wishlist & Share */}
-                      <div className="absolute right-6 top-6 z-20 flex flex-col gap-3 translate-x-12 group-hover:translate-x-0 transition-transform duration-500 ease-out">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWishlist(product.id);
-                          }}
-                          className={`rounded-full p-3 transition-all duration-300 shadow-xl ${
-                            wishlist.includes(product.id) 
-                              ? 'bg-red-500 text-white' 
-                              : 'bg-white/90 backdrop-blur-md text-slate-400 hover:text-red-500'
-                          }`}
-                        >
-                          <Heart size={18} fill={wishlist.includes(product.id) ? "currentColor" : "none"} />
-                        </button>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setShareProduct(product);
-                          }}
-                          className="rounded-full p-3 bg-white/90 backdrop-blur-md text-slate-400 hover:text-black transition-all duration-300 shadow-xl"
-                        >
-                          <Share2 size={18} />
-                        </button>
-                      </div>
-
-                      {/* Gradient Overlay for better readability */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    </div>
-
-                    {/* Info Section */}
-                    <div className="flex flex-1 flex-col p-8 text-center bg-white relative z-10">
-                      <div className="mb-3 flex items-center justify-center gap-2">
-                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">{product.category}</span>
-                        <div className="h-1 w-1 rounded-full bg-slate-200" />
-                        <div className="flex text-amber-400">
-                          <Star size={10} fill="currentColor" />
-                          <span className="ml-1 text-[10px] font-black text-black">{product.rating || 5.0}</span>
-                        </div>
-                      </div>
-                      
-                      <h3 className="mb-4 text-xl font-black text-black tracking-tight leading-tight group-hover:text-slate-600 transition-colors uppercase">
-                        {product.name}
-                      </h3>
-                      
-                      <div className="mt-auto flex flex-col items-center gap-1">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-2xl font-black text-black tracking-tighter">
-                            {product.variants && product.variants.length > 0 ? 'Desde ' : ''}S/ {product.price}
-                          </span>
-                          {product.old_price && (
-                            <span className="text-xs font-bold text-slate-300 line-through">S/ {product.old_price}</span>
+                          {/* Tag */}
+                          {product.tag && (
+                            <div className="absolute left-6 top-6 bg-black px-4 py-1.5 text-[8px] font-black uppercase tracking-[0.2em] text-white rounded-full">
+                              {product.tag}
+                            </div>
                           )}
                         </div>
-                        <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Stock Disponible</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-            </AnimatePresence>
-          </motion.div>
+
+                        {/* Info */}
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Fortisol Perú</span>
+                          <h3 className="text-sm font-display font-black text-black uppercase tracking-tight mb-2 group-hover:text-emerald-600 transition-colors">
+                            {product.name}
+                          </h3>
+                          
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex flex-col">
+                              <span className="text-lg font-display font-black text-black">
+                                S/ {product.price.toFixed(2)}
+                              </span>
+                              {product.old_price && (
+                                <span className="text-xs text-slate-300 line-through font-bold">
+                                  S/ {product.old_price.toFixed(2)}
+                                </span>
+                              )}
+                            </div>
+                            
+                            <button 
+                              onClick={() => addToCart(product)}
+                              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-black transition-all hover:bg-emerald-600 hover:text-white hover:scale-110 active:scale-95"
+                            >
+                              <Plus size={20} />
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-32 text-slate-300 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
+                    <Package size={48} strokeWidth={1} className="mb-4" />
+                    <p className="text-[10px] font-black uppercase tracking-widest">No se encontraron productos</p>
+                    <p className="text-[10px] font-bold text-slate-400 mt-2">Intenta con otra categoría o vuelve más tarde.</p>
+                  </div>
+                )}
+              </div>
+          </div>
         </div>
       </section>
 
@@ -914,14 +894,14 @@ function StoreFront() {
         <div className="container mx-auto max-w-7xl px-6">
           <div className="mb-12 flex flex-col items-center justify-between gap-8 md:flex-row">
             <div className="text-center md:text-left">
-              <h2 className="mb-2 text-3xl font-black text-black uppercase tracking-tighter">Testimonios Reales</h2>
-              <p className="text-base text-slate-500 font-medium">Mira cómo Fortisol está cambiando vidas en todo el Perú.</p>
+              <h2 className="mb-2 text-3xl font-display font-black text-black uppercase tracking-tighter">Testimonios Reales</h2>
+              <p className="text-base text-slate-500 font-display font-medium">Mira cómo Fortisol está cambiando vidas en todo el Perú.</p>
             </div>
             <div className="flex items-center gap-3 rounded-2xl bg-slate-50 p-4">
               <div className="flex text-black">
                 {[1, 2, 3, 4, 5].map(i => <Star key={i} size={16} fill="currentColor" />)}
               </div>
-              <span className="text-xs font-black text-black uppercase tracking-widest">4.9/5 Calificación</span>
+              <span className="text-xs font-display font-black text-black uppercase tracking-widest">4.9/5 Calificación</span>
             </div>
           </div>
 
@@ -973,14 +953,34 @@ function StoreFront() {
                         </div>
                       </div>
                       <div>
-                        <h4 className="text-base font-black leading-none tracking-tight drop-shadow-md">{t.name}</h4>
-                        <p className="text-[9px] font-black text-white/80 uppercase tracking-[0.2em] mt-1.5 drop-shadow-md">{t.location}</p>
+                        <h4 className="text-base font-display font-black leading-none tracking-tight drop-shadow-md">{t.name}</h4>
+                        <p className="text-[9px] font-display font-black text-white/80 uppercase tracking-[0.2em] mt-1.5 drop-shadow-md">{t.location}</p>
                       </div>
                     </div>
-                    <p className="line-clamp-2 text-xs font-bold leading-relaxed text-white/90 italic drop-shadow-md">"{t.text}"</p>
+                    <p className="line-clamp-2 text-xs font-display font-bold leading-relaxed text-white/90 italic drop-shadow-md">"{t.text}"</p>
                   </div>
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Guarantee Section */}
+      <section className="bg-slate-50 py-12">
+        <div className="container mx-auto max-w-7xl px-6">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-6 rounded-full bg-white p-6 shadow-lg">
+              <ShieldCheck size={48} className="text-black" />
+            </div>
+            <h2 className="mb-3 text-2xl font-display font-black text-black md:text-4xl uppercase tracking-tighter">Garantía de Satisfacción</h2>
+            <p className="mx-auto max-w-2xl text-base text-slate-500 font-medium leading-relaxed">
+              En Fortisol Perú, nos comprometemos con tu bienestar. Si no estás satisfecho con los resultados, te brindamos asesoría personalizada gratuita para ajustar tu tratamiento.
+            </p>
+            <div className="mt-4 flex items-center justify-center gap-4 text-[10px] font-display font-black uppercase tracking-[0.3em] text-slate-400">
+              <span>100% Natural</span>
+              <span className="h-1 w-1 rounded-full bg-slate-300" />
+              <span>Calidad Premium</span>
             </div>
           </div>
         </div>
@@ -1112,168 +1112,118 @@ function StoreFront() {
         )}
       </AnimatePresence>
 
-      {/* Guarantee Section */}
-      <section className="bg-slate-50 py-24">
-        <div className="container mx-auto max-w-7xl px-6">
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-8 rounded-full bg-white p-8 shadow-xl">
-              <ShieldCheck size={64} className="text-emerald-600" />
-            </div>
-            <h2 className="mb-6 text-3xl font-black text-black md:text-5xl uppercase tracking-tighter">Garantía de Satisfacción</h2>
-            <p className="mx-auto max-w-2xl text-lg text-slate-500 font-medium leading-relaxed">
-              En Fortisol Perú, nos comprometemos con tu bienestar. Si no estás satisfecho con los resultados, te brindamos asesoría personalizada gratuita para ajustar tu tratamiento.
-            </p>
-            <div className="mt-10 flex items-center gap-4 text-xs font-black uppercase tracking-[0.3em] text-emerald-600/40">
-              <span>Registro Sanitario</span>
-              <span className="h-1 w-1 rounded-full bg-emerald-600/20" />
-              <span>100% Natural</span>
-              <span className="h-1 w-1 rounded-full bg-emerald-600/20" />
-              <span>Calidad Premium</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-white">
+      <section className="py-12 bg-white">
         <div className="container mx-auto max-w-6xl px-6">
           <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-[3rem] bg-gradient-to-br from-emerald-900 via-emerald-950 to-black px-8 py-20 text-center text-white md:px-16"
+            className="relative overflow-hidden rounded-[2rem] bg-black px-6 py-12 text-center text-white md:px-12"
           >
-            <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
             
-            <div className="relative z-10 mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 backdrop-blur-md">
-              <Sparkles size={14} />
+            <div className="relative z-10 mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[10px] font-display font-black uppercase tracking-[0.2em] text-white backdrop-blur-md">
+              <Sparkles size={12} />
               Tratamiento Natural #1 del Perú
             </div>
 
-            <h2 className="relative z-10 mb-6 text-4xl font-black md:text-7xl uppercase tracking-tighter leading-[0.9]">
+            <h2 className="relative z-10 mb-4 text-3xl font-display font-black md:text-5xl uppercase tracking-tighter leading-[0.9] text-white">
               Tu bienestar <br className="hidden md:block" /> no puede esperar
             </h2>
-            <p className="relative z-10 mb-12 mx-auto max-w-2xl text-lg text-zinc-400 font-medium leading-relaxed">
+            <p className="relative z-10 mb-8 mx-auto max-w-xl text-base text-white/70 font-medium leading-relaxed">
               Únete a miles de peruanos que ya recuperaron su movilidad y energía con Fortisol. 
               Resultados garantizados desde las primeras semanas de tratamiento.
             </p>
             
             <button 
               onClick={() => document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group relative z-10 flex items-center justify-center gap-4 rounded-full bg-white px-12 py-5 text-xl font-black text-black shadow-2xl transition-all hover:scale-105 active:scale-95 mx-auto uppercase tracking-widest"
+              className="group relative z-10 flex items-center justify-center gap-3 rounded-full bg-white px-8 py-4 text-lg font-display font-black text-black shadow-xl transition-all hover:scale-105 active:scale-95 mx-auto uppercase tracking-widest"
             >
               VER TRATAMIENTOS AHORA
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:translate-x-1">
-                <Sparkles size={18} />
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-black text-white transition-transform group-hover:translate-x-1">
+                <Sparkles size={14} />
               </div>
             </button>
 
             <div className="mt-12 flex flex-wrap items-center justify-center gap-8 opacity-50 grayscale">
               <div className="flex items-center gap-2">
                 <Check size={16} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Garantía de Calidad</span>
+                <span className="text-[10px] font-display font-black uppercase tracking-widest">Garantía de Calidad</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check size={16} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Envío a todo el Perú</span>
+                <span className="text-[10px] font-display font-black uppercase tracking-widest">Envío a todo el Perú</span>
               </div>
               <div className="flex items-center gap-2">
                 <Check size={16} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Fórmula 100% Natural</span>
+                <span className="text-[10px] font-display font-black uppercase tracking-widest">Fórmula 100% Natural</span>
               </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white py-24 border-t border-slate-100">
-        <div className="container mx-auto max-w-7xl px-6">
-          <div className="grid gap-16 md:grid-cols-12">
-            <div className="md:col-span-5">
-              <div className="mb-8 flex flex-col">
-                <span className="text-3xl font-black tracking-tighter text-black flex items-center gap-1">
-                  FORTISOL<span className="text-[10px] align-top">®</span>
+      {/* Footer (Flora y Fauna Style) */}
+      <footer className="bg-black py-16 text-white">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* Logo & Description */}
+            <div className="flex flex-col">
+              <div className="flex flex-col mb-6">
+                <span className="text-2xl font-display font-black tracking-tighter flex items-center gap-1">
+                  FORTISOL<span className="text-[8px] align-top">®</span>
                 </span>
-                <span className="text-[9px] font-black tracking-[0.4em] text-slate-400 uppercase mt-2">
+                <span className="text-[7px] font-display font-bold tracking-[0.3em] text-white/40 uppercase mt-1">
                   Salud para toda la vida
                 </span>
               </div>
-              <p className="mb-10 max-w-md text-lg text-slate-500 font-medium leading-relaxed">
+              <p className="text-xs text-white/60 font-medium leading-relaxed max-w-sm mb-6">
                 Líderes en fórmulas nutracéuticas y aceites esenciales en Perú. Comprometidos con tu salud y bienestar natural desde hace más de 10 años.
               </p>
-              <div className="flex gap-5">
+              <div className="flex gap-4">
                 {(!settings || settings.show_instagram) && (
-                  <a href={settings?.instagram || SOCIAL_INSTAGRAM} target="_blank" rel="noopener noreferrer" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-black transition-all hover:bg-black hover:text-white hover:scale-110 hover:-rotate-6 shadow-sm">
-                    <Instagram size={20} />
+                  <a href={settings?.instagram || SOCIAL_INSTAGRAM} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white transition-colors">
+                    <Instagram size={18} />
                   </a>
                 )}
                 {(!settings || settings.show_facebook) && (
-                  <a href={settings?.facebook || SOCIAL_FACEBOOK} target="_blank" rel="noopener noreferrer" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-black transition-all hover:bg-black hover:text-white hover:scale-110 hover:rotate-6 shadow-sm">
-                    <Facebook size={20} />
+                  <a href={settings?.facebook || SOCIAL_FACEBOOK} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white transition-colors">
+                    <Facebook size={18} />
                   </a>
                 )}
                 {(!settings || settings.show_tiktok) && (
-                  <a href={settings?.tiktok || SOCIAL_TIKTOK} target="_blank" rel="noopener noreferrer" className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-50 text-black transition-all hover:bg-black hover:text-white hover:scale-110 hover:-rotate-6 shadow-sm">
-                    <MessageCircle size={20} />
+                  <a href={settings?.tiktok || SOCIAL_TIKTOK} target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-white transition-colors">
+                    <MessageCircle size={18} />
                   </a>
                 )}
               </div>
             </div>
-            
-            <div className="md:col-span-2">
-              <h4 className="mb-8 text-[10px] font-black uppercase tracking-[0.4em] text-black">Explorar</h4>
-              <ul className="space-y-5 text-[11px] font-black uppercase tracking-widest text-slate-400">
-                <li><a href="#inicio" className="hover:text-black transition-all hover:translate-x-1 inline-block">Inicio</a></li>
-                <li><a href="#productos" className="hover:text-black transition-all hover:translate-x-1 inline-block">Catálogo</a></li>
-                <li><a href="#testimonios" className="hover:text-black transition-all hover:translate-x-1 inline-block">Testimonios</a></li>
-                <li><a href="#" className="hover:text-black transition-all hover:translate-x-1 inline-block">Términos</a></li>
+
+            {/* Links */}
+            <div className="flex flex-col justify-start">
+              <ul className="space-y-3 text-[11px] font-bold uppercase tracking-widest text-white/60">
+                <li><a href="#inicio" className="hover:text-white transition-colors">Inicio</a></li>
+                <li><a href="#productos" className="hover:text-white transition-colors">Productos</a></li>
+                <li><a href="#testimonios" className="hover:text-white transition-colors">Testimonios</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Términos</a></li>
               </ul>
             </div>
 
-            <div className="md:col-span-2">
-              <h4 className="mb-8 text-[10px] font-black uppercase tracking-[0.4em] text-black">Contacto</h4>
-              <ul className="space-y-6 text-[11px] font-black uppercase tracking-widest text-slate-400">
-                <li className="flex items-center gap-4 group">
-                  <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-all">
-                    <Phone size={14} />
-                  </div>
-                  {settings?.phone || '+51 976 791 234'}
+            {/* Contact */}
+            <div className="flex flex-col justify-start">
+              <ul className="space-y-3 text-[11px] font-bold uppercase tracking-widest text-white/60">
+                <li className="flex items-center gap-2">
+                  <Phone size={14} />
+                  <span>{settings?.phone || '+51 976 791 234'}</span>
                 </li>
-                <li className="flex items-center gap-4 group">
-                  <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-black group-hover:bg-black group-hover:text-white transition-all">
-                    <MessageCircle size={14} />
-                  </div>
-                  <a href={`https://wa.me/${settings?.whatsapp || CONTACT_PHONE}`} target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors">WhatsApp Nacional</a>
+                <li className="flex items-center gap-2">
+                  <MessageCircle size={14} />
+                  <a href={`https://wa.me/${settings?.whatsapp || CONTACT_PHONE}`} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp</a>
                 </li>
               </ul>
-            </div>
-
-            <div className="md:col-span-3">
-              <h4 className="mb-8 text-[10px] font-black uppercase tracking-[0.4em] text-black">Newsletter</h4>
-              <p className="mb-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">Suscríbete para recibir ofertas exclusivas y consejos de salud.</p>
-              <div className="relative">
-                <input 
-                  type="email" 
-                  placeholder="TU EMAIL" 
-                  className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-[10px] font-black uppercase tracking-widest focus:border-black focus:outline-none transition-all"
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-600 p-2.5 text-white hover:bg-emerald-700 transition-all">
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-24 flex flex-col md:flex-row items-center justify-between gap-8 border-t border-slate-100 pt-12">
-            <div className="flex items-center gap-6 opacity-30 grayscale hover:grayscale-0 transition-all duration-500">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="h-4 object-contain" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" className="h-6 object-contain" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/1200px-PayPal.svg.png" alt="Paypal" className="h-4 object-contain" />
-            </div>
-            <div className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-300">
-              © {new Date().getFullYear()} {BRAND_NAME} PERÚ. TODOS LOS DERECHOS RESERVADOS.
             </div>
           </div>
         </div>
@@ -1325,92 +1275,84 @@ function StoreFront() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsPromoOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-3xl overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-white shadow-2xl my-auto"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-xl bg-orange-500 rounded-[2rem] overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.5)] z-10"
             >
               <button 
                 onClick={() => setIsPromoOpen(false)}
-                className="absolute right-4 top-4 md:right-6 md:top-6 z-20 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-slate-100 text-black shadow-lg transition-transform hover:scale-110 active:scale-90"
+                className="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white text-black shadow-xl hover:scale-110 transition-transform"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
 
-              <div className="flex flex-col md:flex-row max-h-[90vh] md:max-h-none overflow-y-auto no-scrollbar">
-                {/* Content */}
-                <div className="flex flex-1 flex-col justify-center p-6 md:p-14 text-black">
-                  <div className="mb-3 md:mb-4 inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-black w-fit">
-                    OFERTA EXCLUSIVA
-                  </div>
-                  <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tighter uppercase mb-3 md:mb-6">
-                    SÚPER <br className="hidden md:block" /> PROBIÓTICOS
+              <div className="flex flex-col md:flex-row h-full">
+                {/* Left Content */}
+                <div className="flex-1 p-8 md:p-10 flex flex-col justify-center text-white">
+                  <h2 className="text-4xl md:text-5xl font-display font-black uppercase tracking-tighter leading-[0.8] mb-6">
+                    COLÁGENO + <br /> MAGNESIO
                   </h2>
                   
-                  <p className="text-[11px] md:text-sm text-slate-500 font-medium leading-relaxed mb-4 md:mb-8">
-                    Fórmula avanzada con 50 billones de cultivos vivos para una digestión perfecta y sistema inmune fuerte.
-                  </p>
+                  <div className="border-2 border-white/30 rounded-2xl p-4 mb-6">
+                    <h3 className="text-xl font-display font-black uppercase tracking-tight mb-2">Ana Maria LaJusticia</h3>
+                    <p className="text-white/80 font-medium">Colágeno con Magnesio x180comp</p>
+                  </div>
 
-                  <div className="flex flex-col gap-2 md:gap-4">
-                    <button 
-                      onClick={() => {
-                        const probioticos = PRODUCTS.find(p => p.name.toLowerCase().includes('probióticos'));
-                        if (probioticos) setSelectedProduct(probioticos);
-                        setIsPromoOpen(false);
-                      }}
-                      className="w-full rounded-full border-2 border-black py-2.5 md:py-4 text-[9px] md:text-[11px] font-black text-black uppercase tracking-widest hover:bg-black hover:text-white transition-all"
-                    >
-                      VER MÁS
-                    </button>
-                    <button 
-                      onClick={() => {
-                        const probioticos = PRODUCTS.find(p => p.name.toLowerCase().includes('probióticos'));
-                        if (probioticos) addToCart(probioticos);
-                        setIsPromoOpen(false);
-                      }}
-                      className="w-full rounded-full bg-black py-3.5 md:py-5 text-[9px] md:text-[11px] font-black text-white uppercase tracking-widest shadow-xl shadow-black/20 hover:bg-slate-800 transition-all"
-                    >
-                      COMPRAR AHORA
-                    </button>
+                  <div className="bg-white rounded-3xl p-6 text-emerald-600 inline-flex flex-col items-start shadow-xl relative overflow-hidden group">
+                    <span className="text-[10px] font-black uppercase tracking-widest mb-1 text-emerald-600/60">PRECIO</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl font-black">S/.</span>
+                      <span className="text-5xl font-black">78</span>
+                      <span className="text-xl font-black">.30</span>
+                    </div>
+                    <p className="text-[10px] font-bold text-emerald-600/40 mt-2 line-through">Precio regular: S/ 87.00</p>
                   </div>
                 </div>
 
-                {/* Image & Badge */}
-                <div className="relative flex flex-1 items-center justify-center bg-slate-50 p-6 md:p-10 min-h-[200px] md:min-h-0">
+                {/* Right Image */}
+                <div className="flex-1 bg-emerald-700 relative flex items-center justify-center p-12">
+                  <div className="absolute top-12 right-12 bg-red-600 text-white h-24 w-24 rounded-full flex flex-col items-center justify-center shadow-2xl animate-bounce">
+                    <span className="text-3xl font-black">10%</span>
+                    <span className="text-[10px] font-black uppercase tracking-tighter">dsct.</span>
+                  </div>
                   <img 
-                    src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&q=80&w=800" 
+                    src="https://picsum.photos/seed/colageno/600/800" 
                     alt="Promo Product" 
-                    className="relative z-10 w-32 md:w-full drop-shadow-2xl transition-transform duration-700 hover:scale-110"
+                    className="h-full w-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute right-4 top-4 md:right-10 md:top-10 z-20 flex h-14 w-14 md:h-24 md:w-24 flex-col items-center justify-center rounded-full bg-red-500 text-white shadow-2xl ring-4 ring-white animate-bounce">
-                    <p className="text-base md:text-2xl font-black">-25%</p>
-                    <p className="text-[7px] md:text-[10px] font-black uppercase tracking-widest">OFF</p>
-                  </div>
                 </div>
+              </div>
+
+              {/* Bottom Bar */}
+              <div className="bg-emerald-900/50 py-3 px-8 text-center">
+                <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                  Promoción válida hasta el 30 de Abril y/o hasta agotar stock.
+                </p>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
-      {/* Product Detail Modal */}
+      {/* Product Detail Modal (Flora y Fauna Style) */}
       <AnimatePresence>
         {selectedProduct && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[500] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto"
           >
             <motion.div 
-              initial={{ scale: 0.95, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 20 }}
-              className="relative w-full max-w-6xl overflow-hidden rounded-[2rem] md:rounded-[3rem] bg-white shadow-2xl my-4 md:my-8"
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl my-auto"
             >
               <button 
                 onClick={() => {
@@ -1419,160 +1361,104 @@ function StoreFront() {
                   setModalQuantity(1);
                   setActiveImageIndex(0);
                 }}
-                className="absolute right-4 top-4 md:right-8 md:top-8 z-20 rounded-full bg-slate-100 p-2 md:p-3 text-slate-900 transition-all hover:bg-emerald-600 hover:text-white shadow-lg"
+                className="absolute right-6 top-6 z-20 rounded-full bg-slate-100 p-2 text-black transition-all hover:bg-black hover:text-white"
               >
-                <X size={20} className="md:w-6 md:h-6" />
+                <X size={20} />
               </button>
 
               <div className="grid grid-cols-1 md:grid-cols-2 max-h-[90vh] overflow-y-auto no-scrollbar">
-                {/* Left Side: Image & Badges */}
-                <div className="relative flex items-center justify-center bg-white p-8 md:p-16 border-r border-slate-50 aspect-square md:aspect-auto">
-                  {/* Discount Badge */}
-                  {selectedProduct.originalPrice && (
-                    <div className="absolute left-8 top-8 z-10 bg-red-600 px-4 py-2 text-sm font-black text-white shadow-lg">
-                      -{Math.round((1 - selectedProduct.price / selectedProduct.originalPrice) * 100)}%
-                    </div>
-                  )}
-                  
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <img 
-                      src={(selectedProduct as any).images?.[activeImageIndex] || (selectedProduct as any).image_url || (selectedProduct as any).image} 
-                      alt={selectedProduct.name} 
-                      className="max-h-full max-w-full object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
+                {/* Left: Image */}
+                <div className="bg-slate-50 p-8 md:p-12 flex items-center justify-center min-h-[300px] md:min-h-0">
+                  <img 
+                    src={(selectedProduct as any).images?.[activeImageIndex] || (selectedProduct as any).image_url || (selectedProduct as any).image} 
+                    alt={selectedProduct.name} 
+                    className="max-h-full max-w-full object-contain drop-shadow-xl"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
 
-                {/* Right Side: Product Info */}
-                <div className="flex flex-col p-8 md:p-16 bg-white">
-                  <div className="mb-6 flex items-center justify-between">
-                    <span className="text-sm font-bold text-emerald-600 uppercase tracking-wider">{selectedProduct.category || 'Herbals & Health'}</span>
-                    <span className="text-xs font-medium text-slate-400">sku: {selectedProduct.sku || '32252532265555'}</span>
+                {/* Right: Info */}
+                <div className="p-8 md:p-12 flex flex-col">
+                  <div className="mb-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-2 block">
+                      {selectedProduct.category || 'Fortisol Natural'}
+                    </span>
+                    <h2 className="text-2xl md:text-4xl font-black text-black tracking-tighter uppercase leading-tight">
+                      {selectedProduct.name}
+                    </h2>
                   </div>
 
-                  <h2 className="mb-4 text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight uppercase">
-                    {selectedProduct.name}
-                  </h2>
-
-                  <div className="mb-8 flex items-center gap-4">
-                    <div className="flex text-amber-400 gap-0.5">
-                      {[1, 2, 3, 4, 5].map(i => (
-                        <Star key={i} size={18} fill={i <= Math.floor(selectedProduct.rating || 5) ? "currentColor" : "none"} />
-                      ))}
-                    </div>
-                    <span className="text-sm font-medium text-slate-400">({selectedProduct.reviewsCount || 0}) reseñas</span>
-                  </div>
-
-                  <div className="mb-10 flex items-baseline gap-4">
-                    <p className="text-5xl font-black text-slate-900 tracking-tighter">
+                  <div className="mb-6 flex items-baseline gap-3">
+                    <p className="text-3xl font-black text-black tracking-tighter">
                       S/ {selectedVariant ? selectedVariant.price : selectedProduct.price}
                     </p>
                     {(selectedVariant?.originalPrice || (!selectedVariant && selectedProduct.originalPrice)) && (
-                      <p className="text-2xl font-bold text-slate-300 line-through tracking-tighter">
+                      <p className="text-xl font-bold text-slate-300 line-through tracking-tighter">
                         S/ {selectedVariant ? selectedVariant.originalPrice : selectedProduct.originalPrice}
                       </p>
                     )}
                   </div>
 
-                  {/* Variants Selection */}
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed mb-8">
+                    {selectedProduct.description || "Fórmula natural premium diseñada para mejorar tu calidad de vida y bienestar general."}
+                  </p>
+
+                  {/* Variants */}
                   {selectedProduct.variants && selectedProduct.variants.length > 0 && (
-                    <div className="mb-10">
-                      <h4 className="mb-4 text-sm font-black text-slate-900 uppercase tracking-widest">Opciones disponibles:</h4>
-                      <div className="flex flex-wrap gap-3">
+                    <div className="mb-8">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest mb-4 text-black">Presentación:</h4>
+                      <div className="flex flex-wrap gap-2">
                         {selectedProduct.variants.map((variant) => (
                           <button
                             key={variant.id}
                             onClick={() => setSelectedVariant(variant)}
-                            className={`rounded-2xl border-2 px-6 py-3 text-xs font-black uppercase tracking-widest transition-all ${
+                            className={`rounded-xl border-2 px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${
                               selectedVariant?.id === variant.id
-                                ? 'border-emerald-600 bg-emerald-50 text-emerald-600 shadow-lg shadow-emerald-600/10'
-                                : 'border-slate-100 bg-slate-50 text-slate-400 hover:border-slate-200'
+                                ? 'border-black bg-black text-white'
+                                : 'border-slate-100 bg-white text-slate-400 hover:border-slate-200'
                             }`}
                           >
-                            {variant.name} - S/ {variant.price}
+                            {variant.name}
                           </button>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Benefits */}
-                  <div className="mb-10">
-                    <h4 className="mb-6 text-lg font-black text-slate-900">Beneficios:</h4>
-                    <ul className="space-y-4">
-                      {(selectedProduct.benefits || [
-                        "🧘 Reduce el estrés y la ansiedad, mejorando el bienestar general",
-                        "⚡ Aumenta la energía física y mental durante el día",
-                        "💪 Mejora la fuerza, resistencia y rendimiento físico",
-                        "❤️ Potencia el rendimiento y la vitalidad masculina",
-                        "🧬 Apoya el equilibrio hormonal y niveles de testosterona",
-                        "🧠 Mejora la concentración, enfoque y estado de ánimo",
-                        "😴 Favorece un mejor descanso y recuperación"
-                      ]).map((benefit: string, i: number) => (
-                        <li key={i} className="text-sm text-slate-600 font-medium leading-relaxed flex items-start gap-3">
-                          {benefit}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Trust Badges */}
-                  <div className="grid grid-cols-3 gap-4 mb-12">
-                    {[
-                      { icon: <Smartphone className="text-emerald-600" size={32} />, title: "Pagos seguros con Yape" },
-                      { icon: <CreditCard className="text-emerald-600" size={32} />, title: "Pago seguro Múltiples" },
-                      { icon: <ShieldCheck className="text-emerald-600" size={32} />, title: "Garantía 30 días" }
-                    ].map((badge, i) => (
-                      <div key={i} className="flex flex-col items-center justify-center rounded-2xl bg-emerald-50/50 p-6 text-center border border-emerald-100 transition-all hover:bg-emerald-50">
-                        <div className="mb-4">{badge.icon}</div>
-                        <p className="text-[10px] font-bold text-slate-800 leading-tight uppercase tracking-tight">{badge.title}</p>
+                  {/* Quantity & Add to Cart */}
+                  <div className="mt-auto pt-8 border-t border-slate-100 flex flex-col gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center rounded-xl border-2 border-slate-100 p-1">
+                        <button 
+                          onClick={() => setModalQuantity(Math.max(1, modalQuantity - 1))}
+                          className="p-2 text-slate-400 hover:text-black transition-colors"
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="w-10 text-center text-sm font-black text-black">{modalQuantity}</span>
+                        <button 
+                          onClick={() => setModalQuantity(modalQuantity + 1)}
+                          className="p-2 text-slate-400 hover:text-black transition-colors"
+                        >
+                          <Plus size={16} />
+                        </button>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-6 rounded-xl border border-slate-200 bg-white px-6 py-4">
                       <button 
-                        onClick={() => setModalQuantity(Math.max(1, modalQuantity - 1))}
-                        className="text-slate-400 hover:text-emerald-600 transition-colors"
+                        onClick={() => {
+                          const productToAdd = selectedVariant 
+                            ? { ...selectedProduct, id: `${selectedProduct.id}-${selectedVariant.id}`, name: `${selectedProduct.name} (${selectedVariant.name})`, price: selectedVariant.price }
+                            : selectedProduct;
+                          
+                          for(let i = 0; i < modalQuantity; i++) {
+                            addToCart(productToAdd);
+                          }
+                          setSelectedProduct(null);
+                        }}
+                        className="flex-1 rounded-xl bg-black py-4 text-[11px] font-black text-white uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-slate-800 transition-all"
                       >
-                        <Minus size={20} />
-                      </button>
-                      <span className="text-xl font-black w-8 text-center">{modalQuantity}</span>
-                      <button 
-                        onClick={() => setModalQuantity(modalQuantity + 1)}
-                        className="text-slate-400 hover:text-emerald-600 transition-colors"
-                      >
-                        <Plus size={20} />
+                        Añadir al carrito
                       </button>
                     </div>
-                    
-                    <button 
-                      onClick={() => {
-                        addToCart(selectedProduct, modalQuantity, selectedVariant || undefined);
-                        setSelectedProduct(null);
-                        setSelectedVariant(null);
-                        setModalQuantity(1);
-                        setIsCartOpen(true);
-                      }}
-                      className="flex flex-1 items-center justify-center gap-3 rounded-xl bg-emerald-600 py-4 text-sm font-black text-white transition-all hover:bg-emerald-700 uppercase tracking-widest shadow-xl shadow-emerald-600/20"
-                    >
-                      <ShoppingCart size={20} />
-                      Añadir al carrito
-                    </button>
-
-                    <button 
-                      onClick={() => toggleWishlist(selectedProduct.id)}
-                      className={`rounded-xl border p-4 transition-all flex items-center justify-center ${
-                        wishlist.includes(selectedProduct.id) 
-                          ? 'border-red-100 text-red-500 bg-red-50' 
-                          : 'border-slate-200 text-slate-400 hover:text-red-500 hover:border-red-100'
-                      }`}
-                    >
-                      <Heart size={24} fill={wishlist.includes(selectedProduct.id) ? "currentColor" : "none"} />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1581,7 +1467,7 @@ function StoreFront() {
         )}
       </AnimatePresence>
 
-      {/* Help Chat Drawer */}
+      {/* Help Chat Drawer (Flora y Fauna Style) */}
       <AnimatePresence>
         {isHelpChatOpen && (
           <>
@@ -1597,27 +1483,24 @@ function StoreFront() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 right-0 top-0 z-[120] flex h-full w-full max-w-[400px] flex-col bg-white shadow-2xl md:h-[calc(100%-2rem)] md:top-4 md:right-4 md:rounded-[2.5rem] md:bottom-4"
+              className="fixed bottom-0 right-0 top-0 z-[120] flex h-full w-full max-w-[400px] flex-col bg-white shadow-2xl md:h-[calc(100%-2rem)] md:top-4 md:right-4 md:rounded-3xl md:bottom-4"
             >
               {/* Chat Header */}
-              <div className="relative overflow-hidden rounded-t-[2.5rem] bg-emerald-600 p-6 text-white md:p-8">
-                <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-                <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-black/10 blur-2xl" />
-                
+              <div className="relative overflow-hidden rounded-t-3xl bg-black p-6 text-white md:p-8">
                 <div className="relative z-10 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="relative">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md shadow-inner">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-md">
                         <Sun size={24} className="text-white" />
                       </div>
-                      <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-emerald-600 bg-emerald-400" />
+                      <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-black bg-emerald-400" />
                     </div>
                     <div>
-                      <h2 className="text-sm font-black uppercase tracking-[0.2em]">Sol</h2>
+                      <h2 className="text-sm font-black uppercase tracking-widest">Sol</h2>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-medium text-emerald-100">Asistente Virtual</span>
-                        <span className="h-1 w-1 rounded-full bg-emerald-300" />
-                        <span className="text-[10px] font-medium text-emerald-100">En línea</span>
+                        <span className="text-[10px] font-medium text-white/60">Asistente Virtual</span>
+                        <span className="h-1 w-1 rounded-full bg-emerald-400" />
+                        <span className="text-[10px] font-medium text-white/60">En línea</span>
                       </div>
                     </div>
                   </div>
@@ -1639,13 +1522,13 @@ function StoreFront() {
                     key={idx} 
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className={`relative max-w-[85%] rounded-3xl px-5 py-4 text-xs font-medium shadow-sm ${
+                    <div className={`relative max-w-[85%] rounded-2xl px-5 py-3 text-xs font-medium shadow-sm ${
                       msg.role === 'user' 
-                        ? 'bg-emerald-600 text-white rounded-tr-none' 
-                        : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'
+                        ? 'bg-black text-white rounded-tr-none' 
+                        : 'bg-white text-black border border-slate-100 rounded-tl-none'
                     }`}>
                       {msg.text}
-                      <span className={`absolute top-0 text-[8px] opacity-30 ${msg.role === 'user' ? '-left-8' : '-right-8'}`}>
+                      <span className={`absolute top-0 text-[8px] font-black opacity-30 ${msg.role === 'user' ? '-left-8' : '-right-8'}`}>
                         {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -1657,17 +1540,17 @@ function StoreFront() {
                     animate={{ opacity: 1 }}
                     className="flex justify-start"
                   >
-                    <div className="bg-white text-slate-400 border border-slate-100 rounded-3xl rounded-tl-none px-6 py-4 shadow-sm flex gap-1">
-                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
-                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                    <div className="bg-white text-slate-400 border border-slate-100 rounded-2xl rounded-tl-none px-6 py-4 shadow-sm flex gap-1">
+                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1 }} className="h-1.5 w-1.5 rounded-full bg-black" />
+                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.2 }} className="h-1.5 w-1.5 rounded-full bg-black" />
+                      <motion.span animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 1, delay: 0.4 }} className="h-1.5 w-1.5 rounded-full bg-black" />
                     </div>
                   </motion.div>
                 )}
               </div>
 
               {/* Chat Input Area */}
-              <div className="bg-white p-6 md:p-8 space-y-6 rounded-b-[2.5rem]">
+              <div className="bg-white p-6 md:p-8 space-y-6 rounded-b-3xl">
                 {chatMessages.length <= 1 && (
                   <div className="flex flex-wrap gap-2">
                     {predefinedQuestions.map((q, idx) => (
@@ -1676,7 +1559,7 @@ function StoreFront() {
                         whileTap={{ scale: 0.98 }}
                         key={idx}
                         onClick={() => handleSendMessage(q)}
-                        className="text-left rounded-2xl border border-slate-100 bg-slate-50 px-4 py-2.5 text-[9px] font-black uppercase tracking-wider text-slate-500 hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-all"
+                        className="text-left rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 text-[9px] font-black uppercase tracking-wider text-slate-500 hover:border-black hover:text-black hover:bg-slate-50 transition-all"
                       >
                         {q}
                       </motion.button>
@@ -1691,12 +1574,12 @@ function StoreFront() {
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(chatInput)}
                     placeholder="Escribe tu duda aquí..."
-                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 pl-6 pr-14 py-4 text-xs font-medium focus:border-emerald-600 focus:bg-white focus:outline-none transition-all shadow-inner"
+                    className="w-full rounded-xl border border-slate-100 bg-slate-50 pl-6 pr-14 py-4 text-xs font-medium focus:border-black focus:bg-white focus:outline-none transition-all"
                   />
                   <button 
                     onClick={() => handleSendMessage(chatInput)}
                     disabled={!chatInput.trim() || isChatLoading}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl bg-emerald-600 p-2.5 text-white hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-lg shadow-emerald-600/20"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-black p-2.5 text-white hover:bg-slate-800 disabled:opacity-50 transition-all shadow-lg"
                   >
                     <Send size={18} />
                   </button>
@@ -1726,17 +1609,17 @@ function StoreFront() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed bottom-0 right-0 top-0 z-[120] flex w-full max-w-md flex-col bg-white shadow-2xl"
+              className="fixed bottom-0 right-0 top-0 z-[120] flex h-full w-full max-w-md flex-col bg-white shadow-2xl"
             >
-              <div className="flex items-center justify-between border-b border-slate-50 p-6">
+              <div className="flex items-center justify-between border-b border-slate-100 p-6">
                 <div className="flex items-center gap-4">
                   {checkoutStep === 2 && (
                     <button onClick={() => setCheckoutStep(1)} className="text-slate-400 hover:text-black transition-colors">
                       <ArrowLeft size={18} />
                     </button>
                   )}
-                  <h2 className="text-xs font-black uppercase tracking-[0.3em] text-black">
-                    {checkoutStep === 1 ? 'Tu Selección' : 'Finalizar Pedido'}
+                  <h2 className="text-[10px] font-black uppercase tracking-widest text-black">
+                    {checkoutStep === 1 ? 'Tu Carrito' : 'Finalizar Pedido'}
                   </h2>
                 </div>
                 <button onClick={() => setIsCartOpen(false)} className="text-slate-400 hover:text-black transition-colors">
@@ -1746,27 +1629,24 @@ function StoreFront() {
 
               <div className="flex-1 overflow-y-auto p-6 no-scrollbar">
                 {checkoutStep === 1 && cart.length > 0 && (
-                  <div className="mb-10 rounded-[2rem] bg-slate-50 p-6 border border-slate-100 shadow-inner">
-                    <div className="flex items-center justify-between mb-3">
+                  <div className="mb-8 rounded-2xl bg-slate-50 p-4 border border-slate-100">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Truck size={16} className={cartTotal >= 200 ? 'text-emerald-500' : 'text-slate-400'} />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black">
-                          {cartTotal >= 200 ? '¡Envío Gratis Activado!' : 'Envío a todo el Perú'}
+                        <Truck size={14} className={cartTotal >= 200 ? 'text-emerald-600' : 'text-slate-400'} />
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-black">
+                          {cartTotal >= 200 ? '¡Envío Gratis!' : 'Envío a todo el Perú'}
                         </span>
                       </div>
-                      <span className="text-[9px] font-black text-slate-400">
-                        {cartTotal >= 200 ? 'S/ 0.00' : `Faltan S/ ${200 - cartTotal}`}
-                      </span>
                     </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${Math.min(100, (cartTotal / 200) * 100)}%` }}
-                        className={`h-full transition-all duration-1000 ${cartTotal >= 200 ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-emerald-600'}`}
+                        className={`h-full transition-all duration-1000 ${cartTotal >= 200 ? 'bg-emerald-500' : 'bg-black'}`}
                       />
                     </div>
                     {cartTotal < 200 && (
-                      <p className="mt-3 text-[8px] font-bold text-slate-400 uppercase tracking-widest text-center">Agrega S/ {200 - cartTotal} más para envío gratuito</p>
+                      <p className="mt-2 text-[8px] font-bold text-slate-400 uppercase tracking-widest text-center">Faltan S/ {200 - cartTotal} para envío gratis</p>
                     )}
                   </div>
                 )}
@@ -1774,52 +1654,41 @@ function StoreFront() {
                 {checkoutStep === 1 ? (
                   cart.length === 0 ? (
                     <div className="flex h-full flex-col items-center justify-center text-center">
-                      <motion.div 
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="mb-6 rounded-full bg-slate-50 p-10 relative"
-                      >
-                        <ShoppingCart size={48} className="text-slate-200" />
-                        <div className="absolute top-8 right-8 h-4 w-4 bg-white rounded-full border-2 border-slate-100" />
-                      </motion.div>
-                      <h3 className="text-lg font-black uppercase tracking-tight text-black mb-2">Tu canasta está vacía</h3>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] max-w-[200px] leading-relaxed">Descubre nuestros productos y empieza a cuidarte hoy.</p>
+                      <ShoppingCart size={48} className="text-slate-100 mb-4" />
+                      <h3 className="text-sm font-black uppercase tracking-widest text-black mb-2">Tu carrito está vacío</h3>
                       <button 
                         onClick={() => setIsCartOpen(false)}
-                        className="mt-8 rounded-full bg-emerald-600 px-8 py-4 text-[10px] font-black text-white uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl"
+                        className="mt-6 rounded-full border-2 border-black px-8 py-3 text-[10px] font-black text-black uppercase tracking-widest hover:bg-black hover:text-white transition-all"
                       >
-                        EXPLORAR TIENDA
+                        Seguir comprando
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-10">
+                    <div className="space-y-8">
                       {cart.map((item) => (
-                        <div key={`${item.product.id}-${item.selectedVariant?.id || ''}`} className="flex gap-6 group relative">
-                          <div className="h-28 w-24 overflow-hidden rounded-[1.5rem] bg-slate-50 shrink-0 border border-slate-100 shadow-sm">
-                            <img src={item.product.image} alt={item.product.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer" />
+                        <div key={`${item.product.id}-${item.selectedVariant?.id || ''}`} className="flex gap-4 group">
+                          <div className="h-20 w-20 overflow-hidden rounded-xl bg-slate-50 shrink-0 border border-slate-100">
+                            <img src={item.product.image} alt={item.product.name} className="h-full w-full object-contain" referrerPolicy="no-referrer" />
                           </div>
                           <div className="flex flex-1 flex-col justify-center">
-                            <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-start justify-between mb-1">
                               <div>
-                                <h4 className="text-sm font-black text-black tracking-tight leading-tight uppercase">{item.product.name}</h4>
+                                <h4 className="text-[11px] font-black text-black uppercase tracking-tighter leading-tight">{item.product.name}</h4>
                                 {item.selectedVariant && (
-                                  <p className="mt-1 text-[9px] font-bold text-emerald-600 uppercase tracking-widest">{item.selectedVariant.name}</p>
+                                  <p className="mt-0.5 text-[8px] font-bold text-slate-400 uppercase tracking-widest">{item.selectedVariant.name}</p>
                                 )}
                               </div>
-                              <button onClick={() => removeFromCart(item.product.id, item.selectedVariant?.id)} className="text-slate-300 hover:text-red-500 transition-all hover:scale-110">
-                                <Trash2 size={16} />
+                              <button onClick={() => removeFromCart(item.product.id, item.selectedVariant?.id)} className="text-slate-300 hover:text-black transition-colors">
+                                <Trash2 size={14} />
                               </button>
                             </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">
-                              S/ {item.selectedVariant ? item.selectedVariant.price : item.product.price}
-                            </p>
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-5 rounded-full border border-slate-100 bg-slate-50 px-4 py-1.5 shadow-inner">
-                                <button onClick={() => updateQuantity(item.product.id, -1, item.selectedVariant?.id)} className="p-1 text-slate-400 hover:text-black transition-colors"><Minus size={12} /></button>
-                                <span className="text-xs font-black w-5 text-center">{item.quantity}</span>
-                                <button onClick={() => updateQuantity(item.product.id, 1, item.selectedVariant?.id)} className="p-1 text-slate-400 hover:text-black transition-colors"><Plus size={12} /></button>
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="flex items-center gap-4 rounded-lg border border-slate-100 px-3 py-1">
+                                <button onClick={() => updateQuantity(item.product.id, -1, item.selectedVariant?.id)} className="text-slate-400 hover:text-black transition-colors"><Minus size={10} /></button>
+                                <span className="text-[10px] font-black w-4 text-center">{item.quantity}</span>
+                                <button onClick={() => updateQuantity(item.product.id, 1, item.selectedVariant?.id)} className="text-slate-400 hover:text-black transition-colors"><Plus size={10} /></button>
                               </div>
-                              <p className="text-sm font-black text-black tracking-tighter">
+                              <p className="text-[11px] font-black text-black tracking-tighter">
                                 S/ {(item.selectedVariant ? item.selectedVariant.price : item.product.price) * item.quantity}
                               </p>
                             </div>
@@ -1830,141 +1699,59 @@ function StoreFront() {
                   )
                 ) : (
                   <div className="space-y-8">
-                    {/* Trust Signals Bar */}
-                    <div className="grid grid-cols-3 gap-3 rounded-[2rem] bg-slate-50 p-4 border border-slate-100 shadow-inner">
-                      <div className="flex flex-col items-center text-center gap-2">
-                        <div className="rounded-full bg-white p-2.5 text-black shadow-sm border border-slate-100">
-                          <ShieldCheck size={14} />
-                        </div>
-                        <span className="text-[7px] font-black uppercase tracking-tighter text-slate-500 leading-tight">Garantía Total</span>
-                      </div>
-                      <div className="flex flex-col items-center text-center gap-2">
-                        <div className="rounded-full bg-white p-2.5 text-black shadow-sm border border-slate-100">
-                          <Truck size={14} />
-                        </div>
-                        <span className="text-[7px] font-black uppercase tracking-tighter text-slate-500 leading-tight">Envío Seguro</span>
-                      </div>
-                      <div className="flex flex-col items-center text-center gap-2">
-                        <div className="rounded-full bg-white p-2.5 text-black shadow-sm border border-slate-100">
-                          <MessageCircle size={14} />
-                        </div>
-                        <span className="text-[7px] font-black uppercase tracking-tighter text-slate-500 leading-tight">Soporte 24/7</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-8">
+                    {/* Checkout Form */}
+                    <div className="space-y-6">
                       <div className="space-y-4">
-                        <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 ml-2">Datos de Contacto</label>
-                        <div className="grid gap-4">
-                          <div className="relative group">
-                            <input 
-                              type="text" 
-                              value={formData.name}
-                              onChange={(e) => setFormData({...formData, name: e.target.value})}
-                              placeholder="NOMBRE COMPLETO"
-                              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-xs font-black uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all shadow-sm"
-                            />
-                            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-black transition-colors">
-                              <User size={16} />
-                            </div>
-                          </div>
-                          <div className="relative group">
-                            <input 
-                              type="tel" 
-                              value={formData.phone}
-                              onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                              placeholder="WHATSAPP / CELULAR"
-                              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-xs font-black uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all shadow-sm"
-                            />
-                            <div className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-black transition-colors">
-                              <Phone size={16} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 ml-2">Ubicación de Entrega</label>
-                        <div className="grid gap-4">
-                          <div className="space-y-2">
-                            <select 
-                              value={formData.department}
-                              onChange={(e) => setFormData({...formData, department: e.target.value, province: '', district: '', address: ''})}
-                              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-[10px] font-black uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all appearance-none shadow-sm"
-                            >
-                              <option value="">DEPARTAMENTO</option>
-                              {PERU_LOCATIONS.map(r => (
-                                <option key={r.id} value={r.name}>{r.name}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <select 
-                              value={formData.province}
-                              onChange={(e) => setFormData({...formData, province: e.target.value, district: '', address: ''})}
-                              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-[10px] font-black uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all appearance-none shadow-sm"
-                              disabled={!formData.department}
-                            >
-                              <option value="">PROVINCIA</option>
-                              {PERU_LOCATIONS.find(r => r.name === formData.department)?.provinces.map(p => (
-                                <option key={p.id} value={p.name}>{p.name}</option>
-                              ))}
-                            </select>
-                            <select 
-                              value={formData.district}
-                              onChange={(e) => setFormData({...formData, district: e.target.value})}
-                              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-[10px] font-black uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all appearance-none shadow-sm"
-                              disabled={!formData.province}
-                            >
-                              <option value="">DISTRITO</option>
-                              {PERU_LOCATIONS.find(r => r.name === formData.department)
-                                ?.provinces.find(p => p.name === formData.province)
-                                ?.districts.map(d => (
-                                  <option key={d} value={d}>{d}</option>
-                                ))}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      {formData.department === 'Lima' && formData.province === 'Lima' ? (
-                        <div className="space-y-3">
-                          <label className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 flex items-center gap-2">
-                            <MapPin size={12} /> Dirección de Domicilio
-                          </label>
-                          <textarea 
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-black border-b border-slate-100 pb-2">Datos de Envío</h3>
+                        <div className="grid grid-cols-1 gap-4">
+                          <input 
+                            type="text" 
+                            placeholder="NOMBRE COMPLETO" 
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            className="w-full rounded-xl border-2 border-slate-50 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all"
+                          />
+                          <input 
+                            type="tel" 
+                            placeholder="TELÉFONO / WHATSAPP" 
+                            value={formData.phone}
+                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                            className="w-full rounded-xl border-2 border-slate-50 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all"
+                          />
+                          <input 
+                            type="text" 
+                            placeholder="DIRECCIÓN DE ENTREGA" 
                             value={formData.address}
                             onChange={(e) => setFormData({...formData, address: e.target.value})}
-                            className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none transition-colors resize-none"
-                            placeholder="Ej. Av. Larco 123, Dpto 402"
-                            rows={3}
+                            className="w-full rounded-xl border-2 border-slate-50 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all"
                           />
-                          <p className="text-[10px] font-medium text-emerald-600 flex items-center gap-1">
-                            <CheckCircle2 size={10} /> ¡Genial! Tenemos cobertura directa en tu zona.
-                          </p>
                         </div>
-                      ) : formData.province && (
-                        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-6 space-y-2">
-                          <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-emerald-600">
-                            <Truck size={12} /> Envío Prioritario
-                          </div>
-                          <p className="text-sm font-black text-black">Envío por Courier Shalom</p>
-                          <p className="text-[10px] font-medium text-slate-600 leading-relaxed">
-                            Llegamos a todo el Perú. Tu pedido será enviado con prioridad para recojo en la agencia Shalom más cercana a tu ubicación.
-                          </p>
-                        </div>
-                      )}
+                      </div>
 
-                      {/* Motivational Quote */}
-                      <div className="rounded-2xl bg-black p-6 text-white overflow-hidden relative">
-                        <div className="relative z-10">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 mb-2">Tu Bienestar Primero</p>
-                          <p className="text-sm font-medium leading-relaxed">
-                            "Estás a un paso de transformar tu salud con lo mejor de la naturaleza."
-                          </p>
-                        </div>
-                        <div className="absolute -right-4 -bottom-4 opacity-10">
-                          <Leaf size={80} />
+                      <div className="space-y-4">
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-black border-b border-slate-100 pb-2">Ubicación</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                          <select 
+                            value={formData.department}
+                            onChange={(e) => setFormData({...formData, department: e.target.value, province: '', district: '', address: ''})}
+                            className="w-full rounded-xl border-2 border-slate-50 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all"
+                          >
+                            <option value="">DEPARTAMENTO</option>
+                            {PERU_LOCATIONS.map(r => (
+                              <option key={r.id} value={r.name}>{r.name}</option>
+                            ))}
+                          </select>
+                          <select 
+                            value={formData.province}
+                            onChange={(e) => setFormData({...formData, province: e.target.value, district: '', address: ''})}
+                            className="w-full rounded-xl border-2 border-slate-50 bg-slate-50 px-4 py-3 text-[10px] font-bold uppercase tracking-widest focus:border-black focus:bg-white focus:outline-none transition-all"
+                            disabled={!formData.department}
+                          >
+                            <option value="">PROVINCIA</option>
+                            {PERU_LOCATIONS.find(r => r.name === formData.department)?.provinces.map(p => (
+                              <option key={p.id} value={p.name}>{p.name}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -1972,44 +1759,38 @@ function StoreFront() {
                 )}
               </div>
 
-              <div className="border-t border-slate-50 p-6 space-y-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Total Estimado</span>
-                  <span className="text-xl font-black text-black tracking-tight">S/ {cartTotal}</span>
+              <div className="border-t border-slate-100 p-6 space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span>Subtotal</span>
+                    <span>S/ {cartTotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span>Envío</span>
+                    <span>{cartTotal >= 200 ? 'GRATIS' : 'S/ 10.00'}</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-black uppercase tracking-widest text-black pt-2">
+                    <span>Total</span>
+                    <span>S/ {(cartTotal + (cartTotal >= 200 ? 0 : 10)).toFixed(2)}</span>
+                  </div>
                 </div>
-                
+
                 {checkoutStep === 1 ? (
                   <button 
                     disabled={cart.length === 0}
                     onClick={() => setCheckoutStep(2)}
-                    className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-4 text-[10px] font-black text-white transition-all hover:bg-slate-800 disabled:opacity-50 uppercase tracking-widest shadow-xl shadow-black/10"
+                    className="w-full rounded-xl bg-black py-4 text-[11px] font-black text-white uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-slate-800 transition-all disabled:opacity-30"
                   >
-                    CONTINUAR PEDIDO
+                    Continuar Pedido
                   </button>
                 ) : (
-                  <div className="space-y-4">
-                    <button 
-                      disabled={
-                        !formData.name || 
-                        !formData.phone || 
-                        !formData.department ||
-                        !formData.province || 
-                        !formData.district || 
-                        (formData.department === 'Lima' && formData.province === 'Lima' && !formData.address)
-                      }
-                      onClick={handleWhatsAppOrder}
-                      className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-emerald-600 py-5 text-[11px] font-black text-white transition-all hover:bg-emerald-700 hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 uppercase tracking-[0.2em] shadow-2xl shadow-emerald-200"
-                    >
-                      <MessageCircle size={18} className="relative z-10" />
-                      <span className="relative z-10">¡SÍ, QUIERO MI PEDIDO!</span>
-                      <Zap size={14} className="relative z-10 text-yellow-300 fill-yellow-300 animate-pulse" />
-                    </button>
-                    <div className="flex items-center justify-center gap-4 opacity-40 grayscale">
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" className="h-3 object-contain" referrerPolicy="no-referrer" />
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" className="h-4 object-contain" referrerPolicy="no-referrer" />
-                      <img src="https://logodownload.org/wp-content/uploads/2021/03/yape-logo.png" alt="Yape" className="h-4 object-contain" referrerPolicy="no-referrer" />
-                    </div>
-                  </div>
+                  <button 
+                    onClick={handleWhatsAppOrder}
+                    className="w-full rounded-xl bg-emerald-600 py-4 text-[11px] font-black text-white uppercase tracking-widest shadow-xl shadow-emerald-600/20 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle size={18} />
+                    Pedir por WhatsApp
+                  </button>
                 )}
               </div>
             </motion.div>
@@ -2092,51 +1873,7 @@ function StoreFront() {
       {/* Popup Modal */}
       <AnimatePresence>
         {isPopupOpen && popupOffers.length > 0 && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-md overflow-y-auto"
-          >
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-[1.5rem] md:rounded-[2.5rem] bg-white p-5 md:p-8 shadow-2xl my-auto"
-            >
-              <button 
-                onClick={() => setIsPopupOpen(false)}
-                className="absolute right-4 top-4 md:right-6 md:top-6 z-10 rounded-full bg-slate-100 p-2 text-slate-500 hover:text-black transition-all hover:rotate-90"
-              >
-                <X size={18} />
-              </button>
-              <div className="text-center mb-4 md:mb-6">
-                <span className="text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">Exclusivo para ti</span>
-                <h2 className="text-base md:text-2xl font-black uppercase tracking-tighter mt-1 md:mt-2">Ofertas de Hoy</h2>
-              </div>
-              <div className="space-y-3 md:space-y-4 max-h-[55vh] md:max-h-[65vh] overflow-y-auto no-scrollbar pr-1">
-                {popupOffers.map(offer => (
-                  <div key={offer.id} className="group relative rounded-xl md:rounded-3xl overflow-hidden border border-slate-100 bg-slate-50 p-2 md:p-3 transition-all hover:border-black">
-                    <div className="aspect-[16/9] w-full overflow-hidden rounded-lg md:rounded-2xl mb-2 md:mb-4">
-                      <img src={offer.image_url} alt={offer.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                    </div>
-                    <div className="flex flex-col gap-2 md:gap-4">
-                      <h3 className="text-[9px] md:text-xs font-black uppercase tracking-tight leading-tight">{offer.title}</h3>
-                      <button 
-                        onClick={() => {
-                          setIsPopupOpen(false);
-                          document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="w-full rounded-full bg-black py-2 md:py-3 text-[7px] md:text-[9px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-all shadow-lg shadow-black/10"
-                      >
-                        Aprovechar Oferta
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </motion.div>
+          null
         )}
       </AnimatePresence>
     </div>

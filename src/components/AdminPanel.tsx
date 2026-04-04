@@ -138,37 +138,37 @@ export default function AdminPanel() {
     <>
       <button 
         onClick={() => { setActiveTab('products'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
-        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'products' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-display font-black uppercase tracking-widest transition-all ${activeTab === 'products' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
       >
         <Package size={14} /> Productos
       </button>
       <button 
         onClick={() => { setActiveTab('crm'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
-        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-display font-black uppercase tracking-widest transition-all ${activeTab === 'crm' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
       >
         <Users size={14} /> CRM
       </button>
       <button 
         onClick={() => { setActiveTab('slides'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
-        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'slides' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-display font-black uppercase tracking-widest transition-all ${activeTab === 'slides' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
       >
         <Layout size={14} /> Diapositivas
       </button>
       <button 
         onClick={() => { setActiveTab('offers'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
-        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'offers' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-display font-black uppercase tracking-widest transition-all ${activeTab === 'offers' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
       >
         <Package size={14} /> Ofertas
       </button>
       <button 
         onClick={() => { setActiveTab('testimonials'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
-        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'testimonials' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-display font-black uppercase tracking-widest transition-all ${activeTab === 'testimonials' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
       >
         <MessageCircle size={14} /> Testimonios
       </button>
       <button 
         onClick={() => { setActiveTab('settings'); document.getElementById('mobile-menu')?.classList.add('hidden'); }}
-        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
+        className={`flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-display font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-black text-white shadow-lg' : 'text-slate-500 hover:text-black'}`}
       >
         <SettingsIcon size={14} /> Configuración
       </button>
@@ -177,7 +177,7 @@ export default function AdminPanel() {
           localStorage.removeItem('admin_auth');
           setIsAuthorized(false);
         }}
-        className="flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all"
+        className="flex items-center gap-2 rounded-full px-4 py-2 text-[10px] font-display font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 transition-all"
       >
         Salir
       </button>
@@ -197,6 +197,7 @@ export default function AdminPanel() {
   const handleSaveProduct = async (product: Partial<Product>) => {
     // Clean up combo_product_ids if not a combo
     const dataToSave = { ...product };
+    delete dataToSave.variants; // Remove variants as it does not exist in the database
     if (!dataToSave.is_combo) {
       dataToSave.combo_product_ids = [];
     } else if (dataToSave.combo_product_ids && Array.isArray(dataToSave.combo_product_ids)) {
@@ -365,47 +366,57 @@ export default function AdminPanel() {
 
   if (!isAuthorized) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
+      <div className="flex min-h-screen items-center justify-center bg-black p-6">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md overflow-hidden rounded-[2.5rem] bg-white p-10 shadow-2xl shadow-slate-200"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md overflow-hidden rounded-[2.5rem] bg-white p-12 shadow-2xl"
         >
-          <div className="mb-8 flex flex-col items-center text-center">
-            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-black text-white shadow-xl shadow-black/20">
-              <Lock size={28} />
+          <div className="mb-10 flex flex-col items-center text-center">
+            <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-black text-white shadow-2xl shadow-black/20">
+              <Lock size={32} strokeWidth={1.5} />
             </div>
-            <h2 className="text-2xl font-black tracking-tight uppercase">Acceso Restringido</h2>
-            <p className="mt-2 text-sm font-medium text-slate-400">Ingresa la clave de administrador para continuar</p>
+            <h2 className="text-3xl font-black tracking-tighter uppercase text-black">Admin <span className="text-slate-300">Access</span></h2>
+            <p className="mt-3 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Fortisol Control Panel</p>
           </div>
-
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Clave Maestra</label>
+ 
+          <form onSubmit={handleLogin} className="space-y-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Master Key</label>
               <input 
                 type="password" 
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-center text-lg font-black tracking-[0.5em] focus:border-black focus:outline-none transition-all"
+                className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-8 py-5 text-center text-2xl font-black tracking-[0.5em] focus:border-black focus:bg-white focus:outline-none transition-all placeholder:text-slate-200"
                 autoFocus
               />
             </div>
-
+ 
             {status && status.type === 'error' && (
-              <p className="text-center text-[10px] font-black uppercase tracking-widest text-rose-500">{status.message}</p>
+              <motion.p 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center text-[10px] font-black uppercase tracking-widest text-rose-500 bg-rose-50 py-3 rounded-xl border border-rose-100"
+              >
+                {status.message}
+              </motion.p>
             )}
-
+ 
             <button 
               type="submit"
-              className="flex w-full items-center justify-center gap-3 rounded-full bg-black py-5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-slate-800 shadow-xl shadow-black/10"
+              className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-black py-6 text-[11px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-slate-900 shadow-2xl shadow-black/10 active:scale-95"
             >
-              <LogIn size={18} /> Entrar al Panel
+              <LogIn size={18} className="transition-transform group-hover:translate-x-1" />
+              <span>Enter Dashboard</span>
             </button>
           </form>
-
-          <div className="mt-10 text-center">
-            <a href="/" className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-black transition-colors">Volver a la tienda</a>
+ 
+          <div className="mt-12 text-center">
+            <a href="/" className="group inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-black transition-all">
+              <ArrowLeft size={12} className="transition-transform group-hover:-translate-x-1" />
+              Back to Store
+            </a>
           </div>
         </motion.div>
       </div>
@@ -421,15 +432,18 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-slate-50 font-display text-black">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6 md:py-4">
-          <div className="flex items-center gap-4">
-            <a href="/" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-black transition-colors hover:bg-black hover:text-white">
+      <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 md:px-6 md:py-8">
+          <div className="flex items-center gap-6">
+            <a href="/" className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-50 text-black transition-all hover:bg-black hover:text-white">
               <ArrowLeft size={20} />
             </a>
-            <h1 className="text-lg md:text-xl font-black tracking-tight">PANEL ADMIN</h1>
+            <div>
+              <h1 className="text-2xl font-black tracking-tighter uppercase">PANEL <span className="text-slate-300">ADMIN</span></h1>
+              <p className="text-[8px] font-bold tracking-[0.4em] text-slate-400 uppercase mt-1">Gestión de Contenido</p>
+            </div>
           </div>
           
           {/* Mobile Menu Button */}
@@ -441,7 +455,7 @@ export default function AdminPanel() {
           </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-2 rounded-full bg-slate-100 p-1">
+          <div className="hidden md:flex items-center gap-2 rounded-2xl bg-slate-50 p-1.5 border border-slate-100">
             <NavButtons />
           </div>
         </div>
@@ -467,7 +481,7 @@ export default function AdminPanel() {
         )}
 
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
-          <h2 className="text-lg md:text-2xl font-black tracking-tight uppercase">
+          <h2 className="text-lg md:text-2xl font-display font-black tracking-tight uppercase">
             {activeTab === 'products' ? 'Gestión de Productos' : activeTab === 'slides' ? 'Carrusel de Inicio' : activeTab === 'offers' ? 'Gestión de Ofertas' : activeTab === 'testimonials' ? 'Gestión de Testimonios' : activeTab === 'crm' ? 'Gestión de Pedidos y Clientes' : 'Configuración de Empresa'}
           </h2>
           {activeTab !== 'settings' && activeTab !== 'crm' && (
@@ -597,8 +611,8 @@ export default function AdminPanel() {
                     <img src={offer.image_url} alt={offer.title} className="h-full w-full object-cover" />
                   </div>
                   <div className="flex-1 w-full text-center md:text-left">
-                    <h3 className="text-sm font-black tracking-tight">{offer.title}</h3>
-                    <p className="text-xs text-slate-500">{products.find(p => p.id === offer.product_id)?.name || 'Producto no encontrado'}</p>
+                    <h3 className="text-sm font-display font-black tracking-tight">{offer.title}</h3>
+                    <p className="text-xs font-display text-slate-500">{products.find(p => p.id === offer.product_id)?.name || 'Producto no encontrado'}</p>
                   </div>
                   <div className="flex gap-2">
                     <button 
@@ -636,9 +650,9 @@ export default function AdminPanel() {
                     <img src={testimonial.avatar || 'https://i.pravatar.cc/150'} alt={testimonial.name} className="h-full w-full object-cover" />
                   </div>
                   <div className="flex-1 w-full text-center md:text-left">
-                    <h3 className="text-sm font-black tracking-tight">{testimonial.name}</h3>
-                    <p className="text-xs text-slate-500">{testimonial.location}</p>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{testimonial.text}</p>
+                    <h3 className="text-sm font-display font-black tracking-tight">{testimonial.name}</h3>
+                    <p className="text-xs font-display text-slate-500">{testimonial.location}</p>
+                    <p className="text-xs font-display text-slate-400 mt-1 line-clamp-2">{testimonial.text}</p>
                   </div>
                   <div className="flex gap-2">
                     <button 
@@ -675,26 +689,26 @@ export default function AdminPanel() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Contact Info */}
                 <div className="space-y-6">
-                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
+                  <h3 className="text-sm font-display font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
                     <PhoneIcon size={16} /> Contacto Directo
                   </h3>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Teléfono</label>
+                      <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400">Teléfono</label>
                       <input 
                         type="text" 
                         value={settings.phone} 
                         onChange={e => setSettings({...settings, phone: e.target.value})}
-                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-display font-medium focus:border-emerald-600 focus:bg-white focus:outline-none transition-all"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">WhatsApp (Número sin espacios)</label>
+                      <label className="text-[10px] font-display font-black uppercase tracking-widest text-slate-400">WhatsApp (Número sin espacios)</label>
                       <input 
                         type="text" 
                         value={settings.whatsapp} 
                         onChange={e => setSettings({...settings, whatsapp: e.target.value})}
-                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-medium focus:border-black focus:outline-none"
+                        className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm font-display font-medium focus:border-emerald-600 focus:bg-white focus:outline-none transition-all"
                       />
                     </div>
                     <div className="space-y-2">
